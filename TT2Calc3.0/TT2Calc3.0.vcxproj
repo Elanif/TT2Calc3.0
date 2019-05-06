@@ -157,12 +157,16 @@
     <ClCompile Include="Build.cpp" />
     <ClCompile Include="BuildImplementations.cpp" />
     <ClCompile Include="Constants.cpp" />
+    <ClCompile Include="Preprocessor.cpp" />
+    <ClCompile Include="Skill.cpp" />
     <ClCompile Include="TT2Calc3.0.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Build.hpp" />
-    <ClInclude Include="BuildImplementations.h" />
+    <ClInclude Include="BuildImplementations.hpp" />
     <ClInclude Include="Constants.hpp" />
+    <ClInclude Include="Preprocessor.hpp" />
+    <ClInclude Include="Skill.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

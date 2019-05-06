@@ -2,16 +2,17 @@
 #include<unordered_map>
 #include<string>
 #include<vector>
+#include"Skill.hpp"
 
 namespace tt2 {
 
 	constexpr std::size_t builds_size = 4;
-	/*const char* build_names[] = {
+	const char* const build_names[] = {
 		"SC",
 		"HS",
 		"CS",
 		"Pet"
-	};*/
+	};
 
 	const enum BUILDS {
 		SC = 0,
@@ -56,5 +57,13 @@ public:
 
 	static bool loadSkillTreeCSV(const char* csv_path);
 	static bool loadSkillTreeCSV(std::string const& csv_path);
-	static std::unordered_map<std::string, std::array<std::vector<double>, 3 > > skills;
+	static bool buildSkill(std::string const& TalentID, std::stringstream& line_stream);
+
+	template<typename T>
+	static std::vector<T> getArray(std::stringstream& line_stream, std::size_t const& MaxLevel);
+	//static std::unordered_map<std::string, std::array<std::vector<double>, 3 > > skills;
+
+	static constexpr std::size_t maxMaxLevel = 26;
+	static std::vector<std::tuple<std::string, std::size_t> > skilltree_header;
+	static std::vector<Skill> skills;
 };
