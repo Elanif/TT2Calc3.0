@@ -2,7 +2,7 @@
 
 Preprocessor::Preprocessor(std::size_t const& build)
 {
-	const std::vector<Skill>& skills=Constants::skills;
+	const std::vector<Skill>& skills=tt2::skills;
 	skillMaxLevel.resize(skills.size());
 	skillCost.resize(skills.size());
 	skillEffect.resize(skills.size());
@@ -18,8 +18,9 @@ Preprocessor::Preprocessor(std::size_t const& build)
 		skillCost[skill_iter][0] = 0;
 		for (std::size_t cost_iter = 1; cost_iter < skillCost[skill_iter].size(); ++cost_iter) {
 			skillCost[skill_iter][cost_iter] = skillCost[skill_iter][cost_iter - 1] + skills[skill_iter].cost[cost_iter - 1];
-			std::cout << skillCost[skill_iter][cost_iter] << " ";
+			//std::cout << skillCost[skill_iter][cost_iter] << " ";
 		}
-		std::cout << "\n";
+		//std::cout << "\n";
+		std::cout << skills[skill_iter].BonusTypeAString << " " << skills[skill_iter].BonusTypeBString << "\n";
 	}
 }

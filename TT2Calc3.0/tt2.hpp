@@ -4,10 +4,12 @@
 #include<vector>
 #include"Skill.hpp"
 
-namespace tt2 {
+class tt2 {
+public:
 
-	constexpr std::size_t builds_size = 4;
-	const char* const build_names[] = {
+
+	static constexpr std::size_t builds_size = 4;
+	static const char* const build_names[] = {
 		"SC",
 		"HS",
 		"CS",
@@ -21,10 +23,11 @@ namespace tt2 {
 		Pet
 	};
 
-	constexpr std::size_t dmgtypes_size = 13;
+
+	static constexpr std::size_t dmgtypes_size = 13;
 	const enum DMGTYPES {
 		ALLDAMAGE = 0,
-		TAPDMG,
+		TAPDAMAGE,
 		TAPFROMHEROES,
 		CRITDAMAGE,
 		CRITCHANCE,
@@ -38,7 +41,7 @@ namespace tt2 {
 		DSDAMAGE,
 	};
 
-	constexpr std::size_t goldtypes_size = 4;
+	static constexpr std::size_t goldtypes_size = 4;
 	const enum GOLDTYPES {
 		PHOMGOLD = 0,
 		CHESTERSONGOLD,
@@ -46,14 +49,15 @@ namespace tt2 {
 		ALLGOLD
 	};
 
-
-};
-
-class Constants {
-public:
-
+	static constexpr double phom_cd = 52;
+	static constexpr double pet_clicks_to_attack = 20;
+	static constexpr double gold_expo = 0.79;
 	static void initExpos();
 	static double dmg_expos[tt2::builds_size][tt2::dmgtypes_size];
+
+	static constexpr double goldExpo = 0.79;
+	static void updateGoldExpos(tt2::GOLDTYPES _goldtype);
+	static double gold_expos[tt2::goldtypes_size]; //careful, this has to be updated before every preprocessor call
 
 	static bool loadSkillTreeCSV(const char* csv_path);
 	static bool loadSkillTreeCSV(std::string const& csv_path);

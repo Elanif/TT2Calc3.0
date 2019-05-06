@@ -5,7 +5,7 @@
 
 int main()
 {
-	Constants::initExpos();
+	tt2::initExpos();
 
 	Expression<double, TapDMG, AllDMG> test;
 	test.add(TapDMG(4)).add(AllDMG(2));
@@ -15,13 +15,13 @@ int main()
 	(test2 += TapDMG(3)) += HeroDMG(1);
 	std::cout << test2.getDamage(tt2::SC, 2) << "\n";
 
-	Expression<double, TapDMG, AllDMG, HeroDMG, Linear, Invert> Exp;
+	Expression<double, TapDMG, AllDMG, HeroDMG> Exp;
 	decltype(Exp) test3;
-	test3=Exp+TapDMG(1)+AllDMG(1)+HeroDMG(5)+Linear(0);
+	test3 = Exp + TapDMG(1) + AllDMG(1) + HeroDMG(5);
 	std::cout << test3.getDamage(tt2::SC, 2) << "\n\n\n\n";
 
 	std::string skilltree_csv = "SkillTreeInfo2.0.csv";
-	if (Constants::loadSkillTreeCSV(skilltree_csv)) {
+	if (tt2::loadSkillTreeCSV(skilltree_csv)) {
 		std::cout << skilltree_csv << " loaded successfully\n";
 	}
 	else {

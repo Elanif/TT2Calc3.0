@@ -7,7 +7,7 @@
 template <typename ValueType>
 class DMGType {
 public:
-	virtual ValueType getDamage(std::size_t const& build, ValueType const& value) = 0;
+	virtual ValueType getDamage(std::size_t const& build, ValueType const& value1, ValueType const& value2, size_t const& gold) = 0;
 };
 
 template<typename ValueType, class... DMGTypesDerived>
@@ -40,12 +40,12 @@ public:
 		return copy;
 	}
 
-	ValueType getDamage(std::size_t const& build, ValueType const& value) {
+	ValueType getDamage(std::size_t const& build, ValueType const& value1, ValueType const& value2, size_t const& gold) {
 
 		return
 			(
 				(
-					std::get<std::pair<bool, DMGTypesDerived> >(parameters).first ? std::get<std::pair<bool, DMGTypesDerived> >(parameters).second.getDamage(build, value) : 1
+					std::get<std::pair<bool, DMGTypesDerived> >(parameters).first ? std::get<std::pair<bool, DMGTypesDerived> >(parameters).second.getDamage(build, value1, value2, gold) : 1
 				) * ...
 			);
 	}

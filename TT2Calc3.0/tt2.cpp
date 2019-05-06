@@ -1,13 +1,13 @@
-#include "Constants.hpp"
+#include "tt2.hpp"
 #include<fstream>
 #include<regex>
 #include<iostream>
 #include<sstream>
 #include<tuple>
 
-double Constants::dmg_expos[tt2::builds_size][tt2::dmgtypes_size] = { 0 };
-std::vector<std::tuple<std::string, std::size_t> > Constants::skilltree_header;
-std::vector<Skill> Constants::skills;
+double tt2::dmg_expos[tt2::builds_size][tt2::dmgtypes_size] = { 0 };
+std::vector<std::tuple<std::string, std::size_t> > tt2::skilltree_header;
+std::vector<Skill> tt2::skills;
 
 std::istream& safeGetline(std::istream& is, std::string& t) //https://stackoverflow.com/a/6089413
 {
@@ -36,11 +36,11 @@ std::istream& safeGetline(std::istream& is, std::string& t) //https://stackoverf
 
 
 
-bool Constants::loadSkillTreeCSV(const char* csv_path) {
+bool tt2::loadSkillTreeCSV(const char* csv_path) {
 	return loadSkillTreeCSV(std::string(csv_path));
 }
 
-bool Constants::loadSkillTreeCSV(std::string const& csv_path) {
+bool tt2::loadSkillTreeCSV(std::string const& csv_path) {
 	std::ifstream skilltree_csv(csv_path);
 	if (!skilltree_csv) {
 		std::cerr << csv_path << " file not found\n";
@@ -96,7 +96,7 @@ bool Constants::loadSkillTreeCSV(std::string const& csv_path) {
 	return true;
 }
 
-bool Constants::buildSkill(std::string const& TalentID, std::stringstream& line_stream)
+bool tt2::buildSkill(std::string const& TalentID, std::stringstream& line_stream)
 {
 	Skill skill;
 	skill.setTalentID(TalentID);
@@ -173,7 +173,7 @@ bool Constants::buildSkill(std::string const& TalentID, std::stringstream& line_
 }
 
 template<typename T>
-std::vector<T> Constants::getArray(std::stringstream& line_stream, std::size_t const& MaxLevel)
+std::vector<T> tt2::getArray(std::stringstream& line_stream, std::size_t const& MaxLevel)
 {
 	std::vector<T> result = {};
 	std::string cost_string = "";
@@ -193,9 +193,9 @@ std::vector<T> Constants::getArray(std::stringstream& line_stream, std::size_t c
 
 }
 
-void Constants::initExpos() {
+void tt2::initExpos() {
 	dmg_expos[tt2::SC][tt2::ALLDAMAGE] = 1;
-	dmg_expos[tt2::SC][tt2::TAPDMG] = 0.6;
+	dmg_expos[tt2::SC][tt2::TAPDAMAGE] = 0.6;
 	dmg_expos[tt2::SC][tt2::TAPFROMHEROES] = 1;
 	dmg_expos[tt2::SC][tt2::CRITCHANCE] = 1.5;
 	dmg_expos[tt2::SC][tt2::CRITDAMAGE] = 1;
@@ -209,7 +209,7 @@ void Constants::initExpos() {
 	dmg_expos[tt2::SC][tt2::DSDAMAGE] = 0.6;
 
 	dmg_expos[tt2::HS][tt2::ALLDAMAGE] = 1;
-	dmg_expos[tt2::HS][tt2::TAPDMG] = 1;
+	dmg_expos[tt2::HS][tt2::TAPDAMAGE] = 1;
 	dmg_expos[tt2::HS][tt2::TAPFROMHEROES] = 1;
 	dmg_expos[tt2::HS][tt2::CRITCHANCE] = 0;
 	dmg_expos[tt2::HS][tt2::CRITDAMAGE] = 1;
@@ -223,7 +223,7 @@ void Constants::initExpos() {
 	dmg_expos[tt2::HS][tt2::DSDAMAGE] = 0;
 
 	dmg_expos[tt2::CS][tt2::ALLDAMAGE] = 1;
-	dmg_expos[tt2::CS][tt2::TAPDMG] = 0;
+	dmg_expos[tt2::CS][tt2::TAPDAMAGE] = 0;
 	dmg_expos[tt2::CS][tt2::TAPFROMHEROES] = 0;
 	dmg_expos[tt2::CS][tt2::CRITCHANCE] = 0.5;
 	dmg_expos[tt2::CS][tt2::CRITDAMAGE] = 1;
@@ -237,7 +237,7 @@ void Constants::initExpos() {
 	dmg_expos[tt2::CS][tt2::DSDAMAGE] = 0.5;
 
 	dmg_expos[tt2::Pet][tt2::ALLDAMAGE] = 1;
-	dmg_expos[tt2::Pet][tt2::TAPDMG] = 1;
+	dmg_expos[tt2::Pet][tt2::TAPDAMAGE] = 1;
 	dmg_expos[tt2::Pet][tt2::TAPFROMHEROES] = 1;
 	dmg_expos[tt2::Pet][tt2::CRITCHANCE] = 1;
 	dmg_expos[tt2::Pet][tt2::CRITDAMAGE] = 1;
@@ -249,4 +249,12 @@ void Constants::initExpos() {
 	dmg_expos[tt2::Pet][tt2::HSDAMAGE] = 0;
 	dmg_expos[tt2::Pet][tt2::SCDAMAGE] = 0;
 	dmg_expos[tt2::Pet][tt2::DSDAMAGE] = 0.5;
+}
+
+void tt2::updateGoldExpos(tt2::GOLDTYPES _goldtype)
+{
+	for (std::size_t i = 0; i < tt2::goldtypes_size; ++i) {
+		gold_expos[i] = 0;
+	}
+	gold_expos[(std::size_t) _goldtype] = 1;
 }
