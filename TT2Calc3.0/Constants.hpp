@@ -54,6 +54,7 @@ public:
 	static void initExpos();
 	static double dmg_expos[tt2::builds_size][tt2::dmgtypes_size];
 
+	static bool loadSkillTreeCSV(const char* csv_path);
 	static bool loadSkillTreeCSV(std::string const& csv_path);
 	static std::unordered_map<std::string, std::array<std::vector<double>, 3 > > skills;
 };
