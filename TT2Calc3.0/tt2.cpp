@@ -5,7 +5,11 @@
 #include<sstream>
 #include<tuple>
 
+double tt2::crit_chance = 0.3;
+double tt2::chesterson_chance = 0.3;
+double tt2::tapdmgfromheroes = 0.4;
 double tt2::dmg_expos[tt2::builds_size][tt2::dmgtypes_size] = { 0 };
+double tt2::gold_expos[tt2::goldtypes_size][tt2::goldtypes_size] = { 0 };
 std::vector<std::tuple<std::string, std::size_t> > tt2::skilltree_header;
 std::vector<Skill> tt2::skills;
 
@@ -196,12 +200,12 @@ std::vector<T> tt2::getArray(std::stringstream& line_stream, std::size_t const& 
 void tt2::initExpos() {
 	dmg_expos[tt2::SC][tt2::ALLDAMAGE] = 1;
 	dmg_expos[tt2::SC][tt2::TAPDAMAGE] = 0.6;
-	dmg_expos[tt2::SC][tt2::TAPFROMHEROES] = 1;
+	dmg_expos[tt2::SC][tt2::TAPDMGFROMHEROES] = 1;
 	dmg_expos[tt2::SC][tt2::CRITCHANCE] = 1.5;
 	dmg_expos[tt2::SC][tt2::CRITDAMAGE] = 1;
 	dmg_expos[tt2::SC][tt2::FIRESWORDDAMAGE] = 0.6;
 	dmg_expos[tt2::SC][tt2::PETDAMAGE] = 0;
-	dmg_expos[tt2::SC][tt2::HERODAMAGE] = 0.6;
+	dmg_expos[tt2::SC][tt2::ALLHERODAMAGE] = 0.6;
 	dmg_expos[tt2::SC][tt2::WARCRYDAMAGE] = 0.6;
 	dmg_expos[tt2::SC][tt2::CSDAMAGE] = 0;
 	dmg_expos[tt2::SC][tt2::HSDAMAGE] = 0;
@@ -210,12 +214,12 @@ void tt2::initExpos() {
 
 	dmg_expos[tt2::HS][tt2::ALLDAMAGE] = 1;
 	dmg_expos[tt2::HS][tt2::TAPDAMAGE] = 1;
-	dmg_expos[tt2::HS][tt2::TAPFROMHEROES] = 1;
+	dmg_expos[tt2::HS][tt2::TAPDMGFROMHEROES] = 1;
 	dmg_expos[tt2::HS][tt2::CRITCHANCE] = 0;
 	dmg_expos[tt2::HS][tt2::CRITDAMAGE] = 1;
 	dmg_expos[tt2::HS][tt2::FIRESWORDDAMAGE] = 0.5;
 	dmg_expos[tt2::HS][tt2::PETDAMAGE] = 0;
-	dmg_expos[tt2::HS][tt2::HERODAMAGE] = 0.5;
+	dmg_expos[tt2::HS][tt2::ALLHERODAMAGE] = 0.5;
 	dmg_expos[tt2::HS][tt2::WARCRYDAMAGE] = 0.5;
 	dmg_expos[tt2::HS][tt2::CSDAMAGE] = 0;
 	dmg_expos[tt2::HS][tt2::HSDAMAGE] = 1;
@@ -224,12 +228,12 @@ void tt2::initExpos() {
 
 	dmg_expos[tt2::CS][tt2::ALLDAMAGE] = 1;
 	dmg_expos[tt2::CS][tt2::TAPDAMAGE] = 0;
-	dmg_expos[tt2::CS][tt2::TAPFROMHEROES] = 0;
+	dmg_expos[tt2::CS][tt2::TAPDMGFROMHEROES] = 0;
 	dmg_expos[tt2::CS][tt2::CRITCHANCE] = 0.5;
 	dmg_expos[tt2::CS][tt2::CRITDAMAGE] = 1;
 	dmg_expos[tt2::CS][tt2::FIRESWORDDAMAGE] = 0;
 	dmg_expos[tt2::CS][tt2::PETDAMAGE] = 0;
-	dmg_expos[tt2::CS][tt2::HERODAMAGE] = 1;
+	dmg_expos[tt2::CS][tt2::ALLHERODAMAGE] = 1;
 	dmg_expos[tt2::CS][tt2::WARCRYDAMAGE] = 1;
 	dmg_expos[tt2::CS][tt2::CSDAMAGE] = 1;
 	dmg_expos[tt2::CS][tt2::HSDAMAGE] = 0;
@@ -238,12 +242,12 @@ void tt2::initExpos() {
 
 	dmg_expos[tt2::Pet][tt2::ALLDAMAGE] = 1;
 	dmg_expos[tt2::Pet][tt2::TAPDAMAGE] = 1;
-	dmg_expos[tt2::Pet][tt2::TAPFROMHEROES] = 1;
+	dmg_expos[tt2::Pet][tt2::TAPDMGFROMHEROES] = 1;
 	dmg_expos[tt2::Pet][tt2::CRITCHANCE] = 1;
 	dmg_expos[tt2::Pet][tt2::CRITDAMAGE] = 1;
 	dmg_expos[tt2::Pet][tt2::FIRESWORDDAMAGE] = 1;
 	dmg_expos[tt2::Pet][tt2::PETDAMAGE] = 1;
-	dmg_expos[tt2::Pet][tt2::HERODAMAGE] = 0.5;
+	dmg_expos[tt2::Pet][tt2::ALLHERODAMAGE] = 0.5;
 	dmg_expos[tt2::Pet][tt2::WARCRYDAMAGE] = 0.5;
 	dmg_expos[tt2::Pet][tt2::CSDAMAGE] = 0;
 	dmg_expos[tt2::Pet][tt2::HSDAMAGE] = 0;
@@ -251,10 +255,24 @@ void tt2::initExpos() {
 	dmg_expos[tt2::Pet][tt2::DSDAMAGE] = 0.5;
 }
 
-void tt2::updateGoldExpos(tt2::GOLDTYPES _goldtype)
+void tt2::initGoldExpos(tt2::GOLDTYPES _goldtype)
 {
 	for (std::size_t i = 0; i < tt2::goldtypes_size; ++i) {
-		gold_expos[i] = 0;
+		gold_expos[i][i] = goldExpo; //every gold type is 1:1 with itself
+		gold_expos[i][tt2::ALLGOLD] = goldExpo; //and all gold works with everything
 	}
-	gold_expos[(std::size_t) _goldtype] = 1;
+
+	gold_expos[tt2::PHOMGOLD][tt2::BOSSGOLD] = goldExpo;
+	gold_expos[tt2::PHOMGOLD][tt2::HOMGOLD] = 0.6*goldExpo;
+
+	gold_expos[tt2::BOSSGOLD][tt2::HOMGOLD] = goldExpo;
+
+	gold_expos[tt2::CHESTERSONGOLD][tt2::MULTISPAWNGOLD] = goldExpo;
+	gold_expos[tt2::CHESTERSONGOLD][tt2::HOMGOLD] = goldExpo;
+	gold_expos[tt2::CHESTERSONGOLD][tt2::CHESTERSONCHANCE] = goldExpo;
+
+	gold_expos[tt2::FAIRYGOLD][tt2::CHESTERSONGOLD] = goldExpo;
+	gold_expos[tt2::FAIRYGOLD][tt2::CHESTERSONCHANCE] = goldExpo;
+	gold_expos[tt2::FAIRYGOLD][tt2::HOMGOLD] = 0.6 * goldExpo;
 }
+

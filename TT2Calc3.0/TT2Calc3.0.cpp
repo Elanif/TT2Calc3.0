@@ -9,16 +9,16 @@ int main()
 
 	Expression<double, TapDMG, AllDMG> test;
 	test.add(TapDMG(4)).add(AllDMG(2));
-	std::cout << test.getDamage(tt2::SC, 2) << "\n";
+	std::cout << test.getDamage(tt2::SC, 2, 0, tt2::PHOMGOLD) << "\n";
 
-	Expression<double, TapDMG, AllDMG, HeroDMG> test2;
-	(test2 += TapDMG(3)) += HeroDMG(1);
-	std::cout << test2.getDamage(tt2::SC, 2) << "\n";
+	Expression<double, TapDMG, AllDMG, AllHeroDMG> test2;
+	(test2 += TapDMG(3)) += AllHeroDMG(1);
+	std::cout << test2.getDamage(tt2::SC, 2, 0, tt2::PHOMGOLD) << "\n";
 
-	Expression<double, TapDMG, AllDMG, HeroDMG> Exp;
+	Expression<double, TapDMG, AllDMG, AllHeroDMG> Exp;
 	decltype(Exp) test3;
-	test3 = Exp + TapDMG(1) + AllDMG(1) + HeroDMG(5);
-	std::cout << test3.getDamage(tt2::SC, 2) << "\n\n\n\n";
+	test3 = Exp + TapDMG(1) + AllDMG(1) + AllHeroDMG(5);
+	std::cout << test3.getDamage(tt2::SC, 2, 0, tt2::PHOMGOLD) << "\n\n\n\n";
 
 	std::string skilltree_csv = "SkillTreeInfo2.0.csv";
 	if (tt2::loadSkillTreeCSV(skilltree_csv)) {
@@ -30,3 +30,5 @@ int main()
 	}
 	Preprocessor preprocessor(0);
 }
+
+//TODO in buildimplementations: add way to make a skill add 0 damage: example lightning burst which is useless for pushing
