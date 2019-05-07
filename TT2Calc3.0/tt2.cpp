@@ -5,8 +5,11 @@
 #include<sstream>
 #include<tuple>
 
+double tt2::sc_base_aps = 4; 
 double tt2::heroic_might_inspired_heroes = 6; //debatable
-double tt2::fight_duration; = 4;
+double tt2::clanshot_cooldown = 4;
+double tt2::spawn_time = 0.6 * (1 - 0.1 + 0.35);
+double tt2::fight_duration = 4;
 double tt2::crit_chance = 0.3;
 double tt2::chesterson_chance = 0.3;
 double tt2::tapdmgfromheroes = 0.4;

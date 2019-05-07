@@ -217,10 +217,54 @@ class AnchoringShot : ExpFraction {
 public:
 	using ExpFraction::ExpFraction;
 	virtual double getDamage(std::size_t const& build, double const& value1, double const& value2, size_t const& gold) {
-		std::cout << "SearingLight::getDamage\n";
-		return 1 + value1 * tt2::fight_duration * (tt2::heroic_might_inspired_heroes + value2) * 2.5;
+		std::cout << "AnchoringShot::getDamage\n";
+		double spawns = tt2::clanshot_cooldown / tt2::spawn_time;
+		return (value1 - 1.) / spawns+ 1.;
 	}
 };
 
+class MidasGold : Expo {
+public:
+	using Expo::Expo;
+	virtual double getDamage(std::size_t const& build, double const& value1, double const& value2, size_t const& gold) {
+		std::cout << "MidasGold::getDamage\n";
 
+		return pow(value1, expo * tt2::gold_expos[gold][tt2::HOMGOLD]);
+	}
+};
+
+class FairyGold : Expo {
+public:
+	using Expo::Expo;
+	virtual double getDamage(std::size_t const& build, double const& value1, double const& value2, size_t const& gold) {
+		std::cout << "FairyGold::getDamage\n";
+
+		return pow(value1, expo * tt2::gold_expos[gold][tt2::FAIRYGOLD]);
+	}
+};
+
+class HSDMG : Expo {
+public:
+	using Expo::Expo;
+	virtual double getDamage(std::size_t const& build, double const& value1, double const& value2, size_t const& gold) {
+		std::cout << "HSDMG::getDamage\n";
+
+		return pow(value1, expo * tt2::dmg_expos[build][tt2::HSDAMAGE]);
+	}
+};
+
+class PhantomVengeance : Expo {
+public:
+	using Expo::Expo;
+	virtual double getDamage(std::size_t const& build, double const& value1, double const& value2, size_t const& gold) {
+		std::cout << "PhantomVengeance::getDamage\n";
+
+		double sc_aps = tt2::sc_base_aps;
+		const double base_efficiency = tt2::spawn_time/(ceil(tt2::spawn_time * sc_aps)/sc_aps);
+		double sc_aps = tt2::sc_base_aps+value2;
+		const double skill_efficiency = tt2::spawn_time / (ceil(tt2::spawn_time * sc_aps) / sc_aps);
+		const double efficiency = pow(skill_efficiency/base_efficiency,48);
+		return pow(value1, expo * tt2::dmg_expos[build][tt2::SCDAMAGE])*efficiency;
+	}
+};
 //todo ALLPROBABILITIES 

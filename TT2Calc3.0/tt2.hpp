@@ -57,7 +57,10 @@ public:
 	static constexpr double pet_taps_to_attack = 20;
 	static constexpr double gold_expo = 0.79;
 	static constexpr double goldExpo = 0.79;
+	static double sc_base_aps;
 	static double heroic_might_inspired_heroes;
+	static double clanshot_cooldown;
+	static double spawn_time;
 	static double fight_duration;
 	static double crit_chance;
 	static double chesterson_chance;
