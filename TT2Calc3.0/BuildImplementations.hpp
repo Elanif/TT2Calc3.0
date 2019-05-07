@@ -170,4 +170,57 @@ public:
 	}
 };
 
+class WarCryDamage : Expo {
+public:
+	using Expo::Expo;
+	virtual double getDamage(std::size_t const& build, double const& value1, double const& value2, size_t const& gold) {
+		std::cout << "WarCryDamage::getDamage\n";
+		return pow(value1, expo * tt2::dmg_expos[build][tt2::WARCRYDAMAGE]);
+	}
+};
+
+class ClanShipDamage : Expo {
+public:
+	using Expo::Expo;
+	virtual double getDamage(std::size_t const& build, double const& value1, double const& value2, size_t const& gold) {
+		std::cout << "ClanShipDamage::getDamage\n";
+		return pow(value1, expo * tt2::dmg_expos[build][tt2::CSDAMAGE]);
+	}
+};
+
+class TIMultiplicative : Expo {
+public:
+	using Expo::Expo;
+	virtual double getDamage(std::size_t const& build, double const& value1, double const& value2, size_t const& gold) {
+		std::cout << "TIMultiplicative::getDamage\n";
+		double result = 1;
+		for (std::size_t i = 0; i < tt2::dmgtypes_size; ++i) {
+			result *= pow(value1,tt2::insight_count_dmg[i]*tt2::dmg_expos[build][i]);
+		}
+		for (std::size_t i = 0; i < tt2::goldtypes_size; ++i) {
+			result *= pow(value1, tt2::insight_count_gold[i] * tt2::gold_expos[build][i]);
+		}
+		return result;
+	}
+};
+
+class SearingLight : Fraction {
+public:
+	using Fraction::Fraction;
+	virtual double getDamage(std::size_t const& build, double const& value1, double const& value2, size_t const& gold) {
+		std::cout << "SearingLight::getDamage\n";
+		return 1 + value1 * tt2::fight_duration*(tt2::heroic_might_inspired_heroes+value2)*2.5;
+	}
+};
+
+class AnchoringShot : ExpFraction {
+public:
+	using ExpFraction::ExpFraction;
+	virtual double getDamage(std::size_t const& build, double const& value1, double const& value2, size_t const& gold) {
+		std::cout << "SearingLight::getDamage\n";
+		return 1 + value1 * tt2::fight_duration * (tt2::heroic_might_inspired_heroes + value2) * 2.5;
+	}
+};
+
+
 //todo ALLPROBABILITIES 

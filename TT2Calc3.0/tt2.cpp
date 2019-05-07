@@ -5,11 +5,15 @@
 #include<sstream>
 #include<tuple>
 
+double tt2::heroic_might_inspired_heroes = 6; //debatable
+double tt2::fight_duration; = 4;
 double tt2::crit_chance = 0.3;
 double tt2::chesterson_chance = 0.3;
 double tt2::tapdmgfromheroes = 0.4;
 double tt2::dmg_expos[tt2::builds_size][tt2::dmgtypes_size] = { 0 };
 double tt2::gold_expos[tt2::goldtypes_size][tt2::goldtypes_size] = { 0 };
+std::size_t insight_count_gold[tt2::goldtypes_size] = { 0 };
+std::size_t insight_count_dmg[tt2::dmgtypes_size] = { 0 };
 std::vector<std::tuple<std::string, std::size_t> > tt2::skilltree_header;
 std::vector<Skill> tt2::skills;
 
@@ -255,7 +259,7 @@ void tt2::initExpos() {
 	dmg_expos[tt2::Pet][tt2::DSDAMAGE] = 0.5;
 }
 
-void tt2::initGoldExpos(tt2::GOLDTYPES _goldtype)
+void tt2::initGoldExpos()
 {
 	for (std::size_t i = 0; i < tt2::goldtypes_size; ++i) {
 		gold_expos[i][i] = goldExpo; //every gold type is 1:1 with itself
@@ -276,3 +280,27 @@ void tt2::initGoldExpos(tt2::GOLDTYPES _goldtype)
 	gold_expos[tt2::FAIRYGOLD][tt2::HOMGOLD] = 0.6 * goldExpo;
 }
 
+void tt2::initInsightMult() {
+	insight_count_dmg[tt2::ALLDAMAGE] = 38;
+	insight_count_dmg[tt2::TAPDAMAGE] = 26;
+	insight_count_dmg[tt2::TAPDMGFROMHEROES] = 0;
+	insight_count_dmg[tt2::CRITCHANCE] = 0;
+	insight_count_dmg[tt2::CRITDAMAGE] = 22;
+	insight_count_dmg[tt2::FIRESWORDDAMAGE] = 0;
+	insight_count_dmg[tt2::PETDAMAGE] = 0;
+	insight_count_dmg[tt2::ALLHERODAMAGE] = 25+21/3; // in media solo uno è attivo?
+	insight_count_dmg[tt2::WARCRYDAMAGE] = 0;
+	insight_count_dmg[tt2::CSDAMAGE] = 0;
+	insight_count_dmg[tt2::HSDAMAGE] = 0;
+	insight_count_dmg[tt2::SCDAMAGE] = 4;
+	insight_count_dmg[tt2::DSDAMAGE] = 0;
+
+	insight_count_gold[tt2::PHOMGOLD] = 0;
+	insight_count_gold[tt2::BOSSGOLD] = 29;
+	insight_count_gold[tt2::HOMGOLD] = 0;
+	insight_count_gold[tt2::CHESTERSONGOLD] = 34;
+	insight_count_gold[tt2::CHESTERSONCHANCE] = 0;
+	insight_count_gold[tt2::MULTISPAWNGOLD] = 0;
+	insight_count_gold[tt2::FAIRYGOLD] = 19;
+	insight_count_gold[tt2::ALLGOLD] = 30;
+}

@@ -57,6 +57,8 @@ public:
 	static constexpr double pet_taps_to_attack = 20;
 	static constexpr double gold_expo = 0.79;
 	static constexpr double goldExpo = 0.79;
+	static double heroic_might_inspired_heroes;
+	static double fight_duration;
 	static double crit_chance;
 	static double chesterson_chance;
 	static double tapdmgfromheroes;
@@ -67,7 +69,11 @@ public:
 	static void initExpos();
 
 	static double gold_expos[tt2::goldtypes_size][tt2::goldtypes_size];
-	static void initGoldExpos(tt2::GOLDTYPES _goldtype);
+	static void initGoldExpos();
+
+	static std::size_t insight_count_gold[tt2::goldtypes_size];
+	static std::size_t insight_count_dmg[tt2::dmgtypes_size];
+	static void initInsightMult();
 
 	static bool loadSkillTreeCSV(const char* csv_path);
 	static bool loadSkillTreeCSV(std::string const& csv_path);
