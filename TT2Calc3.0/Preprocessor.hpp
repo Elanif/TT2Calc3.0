@@ -5,7 +5,7 @@
 class Preprocessor
 {
 public:
-	Preprocessor(std::size_t const& build);
+	Preprocessor(std::size_t const& build, std::size_t const& gold);
 
 	std::vector<unsigned int> skillMaxLevel;
 

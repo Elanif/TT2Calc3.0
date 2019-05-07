@@ -16,8 +16,6 @@ public:
 
 	std::tuple<std::pair<bool, DMGTypesDerived>... > parameters;
 
-
-
 	template<class DerivedClass>
 	Expression<ValueType, DMGTypesDerived...>& add(DerivedClass const& dmg) {
 		std::get<std::pair<bool, DerivedClass> >(parameters).second = dmg;

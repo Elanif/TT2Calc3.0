@@ -16,8 +16,7 @@ int main()
 	std::cout << test2.getDamage(tt2::SC, 2, 0, tt2::PHOMGOLD) << "\n";
 
 	Expression<double, TapDMG, AllDMG, AllHeroDMG> Exp;
-	decltype(Exp) test3;
-	test3 = Exp + TapDMG(1) + AllDMG(1) + AllHeroDMG(5);
+	auto test3 = Exp + TapDMG(1) + AllDMG(1) + AllHeroDMG(5);
 	std::cout << test3.getDamage(tt2::SC, 2, 0, tt2::PHOMGOLD) << "\n\n\n\n";
 
 	std::string skilltree_csv = "SkillTreeInfo2.0.csv";
@@ -28,7 +27,7 @@ int main()
 		std::cout << skilltree_csv << " couldn't be loaded\n";
 		return 1;
 	}
-	Preprocessor preprocessor(0);
+	Preprocessor preprocessor(0,1);
 }
 
 //TODO in buildimplementations: add way to make a skill add 0 damage: example lightning burst which is useless for pushing

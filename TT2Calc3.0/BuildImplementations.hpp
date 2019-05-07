@@ -259,12 +259,14 @@ public:
 	virtual double getDamage(std::size_t const& build, double const& value1, double const& value2, size_t const& gold) {
 		std::cout << "PhantomVengeance::getDamage\n";
 
-		double sc_aps = tt2::sc_base_aps;
+		double sc_aps = tt2::sc_base_aps*tt2::ancient_warrior;
 		const double base_efficiency = tt2::spawn_time/(ceil(tt2::spawn_time * sc_aps)/sc_aps);
-		double sc_aps = tt2::sc_base_aps+value2;
+		sc_aps = (tt2::sc_base_aps+value2)* tt2::ancient_warrior;
 		const double skill_efficiency = tt2::spawn_time / (ceil(tt2::spawn_time * sc_aps) / sc_aps);
 		const double efficiency = pow(skill_efficiency/base_efficiency,48);
 		return pow(value1, expo * tt2::dmg_expos[build][tt2::SCDAMAGE])*efficiency;
 	}
 };
+
+typedef Expression<double, TapDMG, TapDmgFromHelpers, AllHeroDMG, AllDMG, PetDMG, PetTapCountToAttack, BossGold, PHoMCooldown, MaxCritDamageAndCritChance, FireSwordDamage, ChestersonGoldAndChance, WarCryDamage, ClanShipDamage, TIMultiplicative, SearingLight, AnchoringShot, MidasGold, FairyGold, HSDMG, PhantomVengeance> Zero;
 //todo ALLPROBABILITIES 

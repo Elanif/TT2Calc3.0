@@ -5,18 +5,19 @@
 #include<sstream>
 #include<tuple>
 
+double tt2::ancient_warrior = 2; 
 double tt2::sc_base_aps = 4; 
 double tt2::heroic_might_inspired_heroes = 6; //debatable
 double tt2::clanshot_cooldown = 4;
-double tt2::spawn_time = 0.6 * (1 - 0.1 + 0.35);
+double tt2::spawn_time = 0.6 * (1 - 0.1054 + 0.35);
 double tt2::fight_duration = 4;
 double tt2::crit_chance = 0.3;
 double tt2::chesterson_chance = 0.3;
 double tt2::tapdmgfromheroes = 0.4;
 double tt2::dmg_expos[tt2::builds_size][tt2::dmgtypes_size] = { 0 };
 double tt2::gold_expos[tt2::goldtypes_size][tt2::goldtypes_size] = { 0 };
-std::size_t insight_count_gold[tt2::goldtypes_size] = { 0 };
-std::size_t insight_count_dmg[tt2::dmgtypes_size] = { 0 };
+std::size_t tt2::insight_count_gold[tt2::goldtypes_size] = { 0 };
+std::size_t tt2::insight_count_dmg[tt2::dmgtypes_size] = { 0 };
 std::vector<std::tuple<std::string, std::size_t> > tt2::skilltree_header;
 std::vector<Skill> tt2::skills;
 
