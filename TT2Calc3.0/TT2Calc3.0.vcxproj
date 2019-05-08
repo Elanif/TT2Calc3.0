@@ -154,6 +154,7 @@
   <ItemGroup>
     <ClCompile Include="Build.cpp" />
     <ClCompile Include="BuildImplementations.cpp" />
+    <ClCompile Include="Optimizer.cpp" />
     <ClCompile Include="tt2.cpp" />
     <ClCompile Include="Preprocessor.cpp" />
     <ClCompile Include="Skill.cpp" />
@@ -162,6 +163,7 @@
   <ItemGroup>
     <ClInclude Include="Build.hpp" />
     <ClInclude Include="BuildImplementations.hpp" />
+    <ClInclude Include="Optimizer.hpp" />
     <ClInclude Include="tt2.hpp" />
     <ClInclude Include="Preprocessor.hpp" />
     <ClInclude Include="Skill.hpp" />
