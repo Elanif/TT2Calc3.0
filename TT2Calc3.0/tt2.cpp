@@ -14,6 +14,7 @@ double tt2::fight_duration = 4;
 double tt2::crit_chance = 0.3;
 double tt2::chesterson_chance = 0.3;
 double tt2::tapdmgfromheroes = 0.4;
+double tt2::ls_per_second = 2.2 / 100 * 84 * 1.5;
 double tt2::dmg_expos[tt2::builds_size][tt2::dmgtypes_size] = { 0 };
 double tt2::gold_expos[tt2::goldtypes_size][tt2::goldtypes_size] = { 0 };
 std::size_t tt2::insight_count_gold[tt2::goldtypes_size] = { 0 };

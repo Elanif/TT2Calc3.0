@@ -123,6 +123,16 @@ public:
 	}
 };
 
+class pHoMGold : Expo {
+public:
+	using Expo::Expo;
+	virtual double getDamage(std::size_t const& build, double const& value1, double const& value2, size_t const& gold) {
+		std::cout << "pHoMGold::getDamage\n";
+
+		return pow(value1, expo * tt2::gold_expos[gold][tt2::PHOMGOLD]);
+	}
+};
+
 class PHoMCooldown : Fraction {
 public:
 	using Fraction::Fraction;
@@ -268,5 +278,76 @@ public:
 	}
 };
 
-typedef Expression<double, TapDMG, TapDmgFromHelpers, AllHeroDMG, AllDMG, PetDMG, PetTapCountToAttack, BossGold, PHoMCooldown, MaxCritDamageAndCritChance, FireSwordDamage, ChestersonGoldAndChance, WarCryDamage, ClanShipDamage, TIMultiplicative, SearingLight, AnchoringShot, MidasGold, FairyGold, HSDMG, PhantomVengeance> Zero;
+class LightningStrike : Expo { //not very good
+public:
+	using Expo::Expo;
+	virtual double getDamage(std::size_t const& build, double const& value1, double const& value2, size_t const& gold) {
+		std::cout << "LightningStrike::getDamage\n";
+		typedef unsigned long long ull;
+		long double efficiency = 1;
+		long double hp = 1;
+		for (ull i = 0; i < (ull)(tt2::fight_duration * tt2::ls_per_second); ++i) {
+			hp *= 1 - value1 * efficiency;
+			efficiency *= value2;
+		}
+		return .5/ hp+.5;
+	}
+};
+
+class DimensionalShift : Expo { //not very good
+public:
+	using Expo::Expo;
+	virtual double getDamage(std::size_t const& build, double const& value1, double const& value2, size_t const& gold) {
+		std::cout << "DimensionalShift::getDamage\n";
+		return pow(value1, expo * (tt2::dmg_expos[build][tt2::DSDAMAGE]+ tt2::gold_expos[gold][tt2::HOMGOLD]+ tt2::dmg_expos[build][tt2::FIRESWORDDAMAGE] + tt2::dmg_expos[build][tt2::WARCRYDAMAGE] + tt2::dmg_expos[build][tt2::SCDAMAGE]));
+	}
+};
+
+class MasterThief : Expo { //not very good
+public:
+	using Expo::Expo;
+	virtual double getDamage(std::size_t const& build, double const& value1, double const& value2, size_t const& gold) {
+		std::cout << "MasterThief::getDamage\n";
+		return pow(value1, expo * tt2::gold_expos[gold][tt2::ALLGOLD])* pow(value2, expo*tt2::gold_expos[gold][tt2::INACTIVEGOLD]);
+	}
+};
+
+class DSDamage : Expo { //not very good
+public:
+	using Expo::Expo;
+	virtual double getDamage(std::size_t const& build, double const& value1, double const& value2, size_t const& gold) {
+		std::cout << "DSDamage::getDamage\n";
+		return pow(value1, expo * tt2::dmg_expos[gold][tt2::DSDAMAGE]);
+	}
+};
+
+class TwilightVeil : Expo { //not very good
+public:
+	using Expo::Expo;
+	virtual double getDamage(std::size_t const& build, double const& value1, double const& value2, size_t const& gold) {
+		std::cout << "TwilightVeil::getDamage\n";
+		return pow(value1, expo * tt2::dmg_expos[gold][tt2::PETDAMAGE]);
+	}
+}; 
+
+class GhostShip : Expo { //not very good
+public:
+	using Expo::Expo;
+	virtual double getDamage(std::size_t const& build, double const& value1, double const& value2, size_t const& gold) {
+		std::cout << "GhostShip::getDamage\n";
+		return pow(value1, expo * tt2::dmg_expos[gold][tt2::CSDAMAGE]);
+	}
+};
+
+class ShadowAssassin : Expo { //not very good
+public:
+	using Expo::Expo;
+	virtual double getDamage(std::size_t const& build, double const& value1, double const& value2, size_t const& gold) {
+		std::cout << "ShadowAssassin::getDamage\n";
+		return pow(value1, expo * tt2::dmg_expos[gold][tt2::SCDAMAGE]);
+	}
+};
+typedef Expression<double, TapDMG, TapDmgFromHelpers, AllHeroDMG, AllDMG, PetDMG, PetTapCountToAttack, BossGold, pHoMGold, PHoMCooldown, MaxCritDamageAndCritChance, FireSwordDamage,
+						   ChestersonGoldAndChance, WarCryDamage, ClanShipDamage, TIMultiplicative, SearingLight, AnchoringShot, MidasGold, FairyGold, HSDMG, PhantomVengeance, 
+						   LightningStrike, DimensionalShift, MasterThief, DSDamage, TwilightVeil, GhostShip, ShadowAssassin> Zero;
 //todo ALLPROBABILITIES 

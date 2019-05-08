@@ -1,7 +1,7 @@
 #include "Preprocessor.hpp"
 #include"BuildImplementations.hpp"
 
-Preprocessor::Preprocessor(std::size_t const& build, std::size_t const& gold)
+Preprocessor::Preprocessor(std::size_t const& build, std::size_t const& gold, std::vector<Zero>& SkillPowers)
 {
 	const std::vector<Skill>& skills=tt2::skills;
 	skillMaxLevel.resize(skills.size());
@@ -9,7 +9,7 @@ Preprocessor::Preprocessor(std::size_t const& build, std::size_t const& gold)
 	skillEffect.resize(skills.size());
 	for (std::size_t skill_iter = 0; skill_iter < skills.size(); ++skill_iter) {
 		//maxlvl
-
+		std::cout << skills[skill_iter].Name << "\n";
 		skillMaxLevel[skill_iter] = skills[skill_iter].MaxLevel;
 
 		//skillcost
@@ -22,14 +22,9 @@ Preprocessor::Preprocessor(std::size_t const& build, std::size_t const& gold)
 		}
 		
 		skillEffect[skill_iter].resize(skillMaxLevel[skill_iter] + 1ull);
-		for (std::size_t level = 0; level < skillCost[skill_iter].size(); ++level) {
-			auto exp = Zero() + PhantomVengeance(1); 
-			skillEffect[skill_iter][level] = exp.getDamage(build, skills[skill_iter].BonusTypeA[level], skills[skill_iter].BonusTypeB[level], gold);
-			//if (skills[skill_iter].Name == std::string("Phantom Vengeance")) std::cout << level<<":"<<pow(skillEffect[skill_iter][level],1./ skillCost[skill_iter][level]) << "\n";// value1 = "<< skills[skill_iter].BonusTypeA[level]<<" value2 = "<< skills[skill_iter].BonusTypeB[level] <<"\n";
+		skillEffect[skill_iter][0] = 1;
+		for (std::size_t level = 1; level < skillCost[skill_iter].size(); ++level) {
+			skillEffect[skill_iter][level] = SkillPowers[skill_iter].getDamage(skill_iter, skills[skill_iter].BonusTypeA[level], skills[skill_iter].BonusTypeB[level], gold);
 		}
-		//std::cout << "\n";
-		std::cout << skills[skill_iter].BonusTypeAString;//
-		
-		//<< " " << skills[skill_iter].BonusTypeBString << "\n";
 	}
 }

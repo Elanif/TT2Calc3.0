@@ -41,7 +41,7 @@ public:
 		DSDAMAGE,
 	};
 
-	static constexpr std::size_t goldtypes_size = 8;
+	static constexpr std::size_t goldtypes_size = 9;
 	const enum GOLDTYPES {
 		PHOMGOLD = 0,
 		BOSSGOLD,
@@ -50,7 +50,8 @@ public:
 		CHESTERSONCHANCE,
 		MULTISPAWNGOLD,
 		FAIRYGOLD,
-		ALLGOLD
+		ALLGOLD,
+		INACTIVEGOLD
 	};
 
 	static constexpr double phom_cd = 75;
@@ -66,6 +67,7 @@ public:
 	static double crit_chance;
 	static double chesterson_chance;
 	static double tapdmgfromheroes;
+	static double ls_per_second;
 	static double constexpr max_crit_damage_ratio = 6.7;
 
 
