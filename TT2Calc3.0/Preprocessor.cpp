@@ -28,3 +28,14 @@ Preprocessor::Preprocessor(std::size_t const& build, std::size_t const& gold, st
 		}
 	}
 }
+
+std::vector<SkillContainer> Preprocessor::getSkillContainer()
+{
+	std::vector<SkillContainer> result;
+	std::size_t skillNumber = skillMaxLevel.size();
+	result.reserve(skillNumber);
+	for (std::size_t i = 0; i < skillNumber; ++i) {
+		//result[i] = SkillContainer(tt2::skills[i], skillMaxLevel[i], skillCost[i], skillEffect[i]);
+	}
+	return result;
+}

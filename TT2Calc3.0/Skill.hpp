@@ -1,9 +1,13 @@
 #pragma once
 #include<string>
 #include<vector>
+#include"Globals.hpp"
+#include<tuple>
+
 class Skill
 {
 public:
+	std::size_t index = 0;
 	std::string TalentID="";
 	void setTalentID(std::string const& _TalentID) { TalentID = _TalentID; }
 
@@ -14,18 +18,10 @@ public:
 		SORCERER,
 		ASSASSIN
 	} Branch=(BRANCH)0;
-	bool setBranch(std::string const& _Branch) {
-		const std::string branch_names[] = {"BranchRed","BranchYellow","BranchBlue","BranchGreen"};
-		Branch = (BRANCH)0;
-		while (branch_names[Branch] != _Branch) {
-			Branch = (BRANCH) ((std::size_t) Branch + 1);
-			if ((std::size_t) Branch >= Branch_size) {
-				Branch = (BRANCH)0;
-				return false;
-			}
-		}
-		return true;
-	}
+
+	static std::tuple<std::size_t, std::size_t> branch_range[Branch_size];
+
+	bool setBranch(std::string const& _Branch);
 
 	std::size_t Slot=0;
 	void setSlot(std::string const& _slot) { Slot = std::stoul(_slot); }
@@ -36,8 +32,8 @@ public:
 	Skill const* TalentReq=nullptr;
 	void setTalentReq(Skill const* _TalentReq) { TalentReq = _TalentReq; }
 
-	static constexpr unsigned int Tier_size = 4;
-	unsigned int Tier=0;
+	static constexpr ctype Tier_size = 4;
+	ctype Tier=0;
 	bool setTier(std::string const& _Tier) {
 		const std::string tiers[] = { "I","II","III","IV" };
 		Tier = 0;
@@ -60,19 +56,19 @@ public:
 	std::size_t MaxLevel = 0;
 	void setMaxLevel(std::string const& _MaxLevel) { MaxLevel = std::stoul(_MaxLevel); }
 
-	std::vector<unsigned int> cost;
-	void setCost(std::vector<unsigned int> const& cost_vector) { cost = cost_vector; }
+	std::vector<ctype> cost;
+	void setCost(std::vector<ctype> const& cost_vector) { cost = cost_vector; }
 
 	std::string BonusTypeAString;
 	void setBonusTypeAString(std::string const& _BonusTypeAString) { BonusTypeAString = _BonusTypeAString; }
 
-	std::vector<double> BonusTypeA;
-	void setBonusTypeA(std::vector<double> const& _BonusTypeA) { BonusTypeA = _BonusTypeA; }
+	std::vector<vtype> BonusTypeA;
+	void setBonusTypeA(std::vector<vtype> const& _BonusTypeA) { BonusTypeA = _BonusTypeA; }
 
 	std::string BonusTypeBString;
 	void setBonusTypeBString(std::string const& _BonusTypeBString) { BonusTypeBString = _BonusTypeBString; }
 
-	std::vector<double> BonusTypeB;
-	void setBonusTypeB(std::vector<double> const& _BonusTypeB) { BonusTypeB = _BonusTypeB; }
+	std::vector<vtype> BonusTypeB;
+	void setBonusTypeB(std::vector<vtype> const& _BonusTypeB) { BonusTypeB = _BonusTypeB; }
 };
 

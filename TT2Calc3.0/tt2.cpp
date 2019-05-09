@@ -4,19 +4,20 @@
 #include<iostream>
 #include<sstream>
 #include<tuple>
+#include"Globals.hpp"
 
-double tt2::ancient_warrior = 2; 
-double tt2::sc_base_aps = 4; 
-double tt2::heroic_might_inspired_heroes = 6; //debatable
-double tt2::clanshot_cooldown = 4;
-double tt2::spawn_time = 0.6 * (1 - 0.1054 + 0.35);
-double tt2::fight_duration = 4;
-double tt2::crit_chance = 0.3;
-double tt2::chesterson_chance = 0.3;
-double tt2::tapdmgfromheroes = 0.4;
-double tt2::ls_per_second = 2.2 / 100 * 84 * 1.5;
-double tt2::dmg_expos[tt2::builds_size][tt2::dmgtypes_size] = { 0 };
-double tt2::gold_expos[tt2::goldtypes_size][tt2::goldtypes_size] = { 0 };
+vtype tt2::ancient_warrior = 2; 
+vtype tt2::sc_base_aps = 4; 
+vtype tt2::heroic_might_inspired_heroes = 6; //debatable
+vtype tt2::clanshot_cooldown = 4;
+vtype tt2::spawn_time = 0.6 * (1 - 0.1054 + 0.35);
+vtype tt2::fight_duration = 4;
+vtype tt2::crit_chance = 0.3;
+vtype tt2::chesterson_chance = 0.3;
+vtype tt2::tapdmgfromheroes = 0.4;
+vtype tt2::ls_per_second = 2.2 / 100 * 84 * 1.5;
+vtype tt2::dmg_expos[tt2::builds_size][tt2::dmgtypes_size] = { 0 };
+vtype tt2::gold_expos[tt2::goldtypes_size][tt2::goldtypes_size] = { 0 };
 std::size_t tt2::insight_count_gold[tt2::goldtypes_size] = { 0 };
 std::size_t tt2::insight_count_dmg[tt2::dmgtypes_size] = { 0 };
 std::vector<std::tuple<std::string, std::size_t> > tt2::skilltree_header;
@@ -95,12 +96,14 @@ bool tt2::loadSkillTreeCSV(std::string const& csv_path) {
 		std::cout << std::get<std::string>(i) <<":"<<std::get<std::size_t>(i)<< "\n";
 	}
 
+	std::size_t skill_counter = 0;
 	while (safeGetline(skilltree_csv, line)) {
 		std::string TalentID="";
 		std::stringstream line_stream(line);
 		std::getline(line_stream, TalentID, ',');
 		if (TalentID.length() == 0) break;
-		else buildSkill(TalentID, line_stream);
+		else buildSkill(TalentID, line_stream,skill_counter);
+		skill_counter++;
 	}
 
 	for (auto const& i : skills) {
@@ -109,15 +112,19 @@ bool tt2::loadSkillTreeCSV(std::string const& csv_path) {
 	return true;
 }
 
-bool tt2::buildSkill(std::string const& TalentID, std::stringstream& line_stream)
+bool tt2::buildSkill(std::string const& TalentID, std::stringstream& line_stream, std::size_t const& skill_counter)
 {
 	Skill skill;
+	skill.index = skill_counter;
 	skill.setTalentID(TalentID);
 	std::string info = "";
 
 	//Branch
 	if (!std::getline(line_stream, info, ',')) return false;
-	skill.setBranch(info);
+	if (!skill.setBranch(info)) {
+		std::cout << "Couldn't set branch\n";
+		return false;
+	}
 	//Slot
 	if (!std::getline(line_stream, info, ',')) return false;
 	skill.setSlot(info);
@@ -127,12 +134,27 @@ bool tt2::buildSkill(std::string const& TalentID, std::stringstream& line_stream
 	//TalentReq
 	if (!std::getline(line_stream, info, ',')) return false;
 	skill.TalentReq = nullptr;
-	for (auto const& i : skills) {
-		if (i.TalentID == info) skill.setTalentReq(&i);
+	if (info != "None") {
+		std::size_t found = 0;
+		for (auto const& i : skills) {
+			if (i.TalentID == info) {
+				skill.setTalentReq(&i);
+				++found;
+			}
+		}
+		if (found != 1) {
+			if (found == 0) std::cout << "No TalentID requirement found";
+			else std::cout << "Too many TalentID requirements found";
+			std::cout << " looking for " << info << " from " << skill.TalentID << "\n";
+			return false;
+		}
 	}
 	//Tier
 	if (!std::getline(line_stream, info, ',')) return false;
-	skill.setTier(info);
+	if (!skill.setTier(info)) {
+		std::cout << "Couldn't set tier\n";
+		return false;
+	}
 	//Name
 	if (!std::getline(line_stream, info, ',')) return false;
 	skill.setName(info);
@@ -148,7 +170,7 @@ bool tt2::buildSkill(std::string const& TalentID, std::stringstream& line_stream
 		if (!std::getline(line_stream, info, ',')) return false;
 	}
 	//SKill costs
-	skill.setCost(getArray<unsigned int>(line_stream, skill.MaxLevel));
+	skill.setCost(getArray<ctype>(line_stream, skill.MaxLevel));
 	for (auto const& i : skill.cost) {
 		std::cout << i << " ";
 	}
@@ -161,7 +183,7 @@ bool tt2::buildSkill(std::string const& TalentID, std::stringstream& line_stream
 	skill.setBonusTypeAString(info);
 
 	//BonusTypeA
-	skill.setBonusTypeA(getArray<double>(line_stream, skill.MaxLevel));
+	skill.setBonusTypeA(getArray<vtype>(line_stream, skill.MaxLevel));
 	for (auto const& i : skill.BonusTypeA) {
 		std::cout << i << " ";
 	}
@@ -174,7 +196,7 @@ bool tt2::buildSkill(std::string const& TalentID, std::stringstream& line_stream
 	skill.setBonusTypeBString(info);
 
 	//BonusTypeB
-	skill.setBonusTypeB(getArray<double>(line_stream, skill.MaxLevel));
+	skill.setBonusTypeB(getArray<vtype>(line_stream, skill.MaxLevel));
 	for (auto const& i : skill.BonusTypeB) {
 		std::cout << i << " ";
 	}
@@ -199,7 +221,7 @@ std::vector<T> tt2::getArray(std::stringstream& line_stream, std::size_t const& 
 	result.push_back(value);
 	for (std::size_t i = 0; i < MaxLevel; ++i) {
 		if (!std::getline(line_stream, cost_string, ',') || cost_string.length() <= 0 || cost_string == "-") return result;
-		value = (T)std::stold(cost_string); //TODO would be nice to specialize the thing for unsigned int or double
+		value = (T)std::stold(cost_string); //TODO would be nice to specialize the thing for ctype or vtype
 		result.push_back(value);
 	}
 	return result;

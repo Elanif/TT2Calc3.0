@@ -3,6 +3,7 @@
 #include<string>
 #include<vector>
 #include"Skill.hpp"
+#include"Globals.hpp"
 
 class tt2 {
 public:
@@ -54,27 +55,27 @@ public:
 		INACTIVEGOLD
 	};
 
-	static constexpr double phom_cd = 75;
-	static constexpr double pet_taps_to_attack = 20;
-	static constexpr double gold_expo = 0.79;
-	static constexpr double goldExpo = 0.79;
-	static double ancient_warrior;
-	static double sc_base_aps;
-	static double heroic_might_inspired_heroes;
-	static double clanshot_cooldown;
-	static double spawn_time;
-	static double fight_duration;
-	static double crit_chance;
-	static double chesterson_chance;
-	static double tapdmgfromheroes;
-	static double ls_per_second;
-	static double constexpr max_crit_damage_ratio = 6.7;
+	static constexpr vtype phom_cd = 75;
+	static constexpr vtype pet_taps_to_attack = 20;
+	static constexpr vtype gold_expo = 0.79;
+	static constexpr vtype goldExpo = 0.79;
+	static vtype ancient_warrior;
+	static vtype sc_base_aps;
+	static vtype heroic_might_inspired_heroes;
+	static vtype clanshot_cooldown;
+	static vtype spawn_time;
+	static vtype fight_duration;
+	static vtype crit_chance;
+	static vtype chesterson_chance;
+	static vtype tapdmgfromheroes;
+	static vtype ls_per_second;
+	static vtype constexpr max_crit_damage_ratio = 6.7;
 
 
-	static double dmg_expos[tt2::builds_size][tt2::dmgtypes_size];
+	static vtype dmg_expos[tt2::builds_size][tt2::dmgtypes_size];
 	static void initExpos();
 
-	static double gold_expos[tt2::goldtypes_size][tt2::goldtypes_size];
+	static vtype gold_expos[tt2::goldtypes_size][tt2::goldtypes_size];
 	static void initGoldExpos();
 
 	static std::size_t insight_count_gold[tt2::goldtypes_size];
@@ -83,11 +84,11 @@ public:
 
 	static bool loadSkillTreeCSV(const char* csv_path);
 	static bool loadSkillTreeCSV(std::string const& csv_path);
-	static bool buildSkill(std::string const& TalentID, std::stringstream& line_stream);
+	static bool buildSkill(std::string const& TalentID, std::stringstream& line_stream, std::size_t const& skill_counter);
 
 	template<typename T>
 	static std::vector<T> getArray(std::stringstream& line_stream, std::size_t const& MaxLevel);
-	//static std::unordered_map<std::string, std::array<std::vector<double>, 3 > > skills;
+	//static std::unordered_map<std::string, std::array<std::vector<vtype>, 3 > > skills;
 
 	static constexpr std::size_t maxMaxLevel = 26;
 	static std::vector<std::tuple<std::string, std::size_t> > skilltree_header;
