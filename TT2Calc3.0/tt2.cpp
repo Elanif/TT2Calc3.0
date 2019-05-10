@@ -189,12 +189,12 @@ bool tt2::buildSkill(std::string const& TalentID, std::stringstream& line_stream
 
 	skill.setSPReq(s_SPReq);
 
-	skill.TalentReq = nullptr;
+	skill.TalentReq = (std::size_t) -1;
 	if (s_TalentReq != "None") {
 		std::size_t found = 0;
-		for (auto const& i : skills) {
-			if (i.TalentID == s_TalentReq) {
-				skill.setTalentReq(&i);
+		for (std::size_t i = 0; i < tt2::skills.size(); ++i) {
+			if (skills[i].TalentID == s_TalentReq) {
+				skill.setTalentReq(i);
 				++found;
 			}
 		}

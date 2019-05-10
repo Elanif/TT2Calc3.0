@@ -39,8 +39,8 @@ public:
 	std::size_t SPReq=0;
 	void setSPReq(std::string const& _spReq) { SPReq = std::stoul(_spReq); }
 
-	Skill const* TalentReq=nullptr;
-	void setTalentReq(Skill const* _TalentReq) { TalentReq = _TalentReq; }
+	std::size_t TalentReq=(std::size_t) -1;
+	void setTalentReq(std::size_t const _TalentReq) { TalentReq = _TalentReq; }
 
 	std::vector<const Skill *> GettingToArray;
 	void addGettingTo(const Skill* _gettingToSkill) { GettingToArray.push_back(_gettingToSkill); }

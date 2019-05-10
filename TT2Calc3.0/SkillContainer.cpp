@@ -7,9 +7,9 @@ SkillContainer::SkillContainer(Skill const& _skill, std::size_t const& _maxLevel
 }
 
 bool SkillContainer::unlocked(std::vector<SkillContainer> const& _skillcont) const{
-	if (skill.TalentReq == nullptr) return true; //root of skilltree
+	if (skill.TalentReq >=(std::size_t)-1) return true; //root of skilltree
 	else {
-		const std::size_t indexreq = skill.TalentReq->index;
+		const std::size_t indexreq = tt2::skills[skill.TalentReq].index;
 		//if (!_skillcont[indexreq].unlocked(_skillcont)) return false;
 		if (_skillcont[indexreq].level <= 0) return false;
 		if (gettingTo(_skillcont) < skill.SPReq) return false;
