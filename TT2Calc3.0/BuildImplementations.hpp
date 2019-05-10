@@ -294,7 +294,7 @@ public:
 	}
 };
 
-class DimensionalShift : Expo { //not very good
+class DimensionalShift : Expo { 
 public:
 	using Expo::Expo;
 	virtual vtype getDamage(std::size_t const& build, vtype const& value1, vtype const& value2, size_t const& gold) {
@@ -312,7 +312,7 @@ public:
 	}
 };
 
-class DSDamage : Expo { //not very good
+class DSDamage : Expo { 
 public:
 	using Expo::Expo;
 	virtual vtype getDamage(std::size_t const& build, vtype const& value1, vtype const& value2, size_t const& gold) {
@@ -321,7 +321,7 @@ public:
 	}
 };
 
-class TwilightVeil : Expo { //not very good
+class TwilightVeil : Expo {
 public:
 	using Expo::Expo;
 	virtual vtype getDamage(std::size_t const& build, vtype const& value1, vtype const& value2, size_t const& gold) {
@@ -330,7 +330,7 @@ public:
 	}
 }; 
 
-class GhostShip : Expo { //not very good
+class GhostShip : Expo { 
 public:
 	using Expo::Expo;
 	virtual vtype getDamage(std::size_t const& build, vtype const& value1, vtype const& value2, size_t const& gold) {
@@ -339,7 +339,7 @@ public:
 	}
 };
 
-class ShadowAssassin : Expo { //not very good
+class ShadowAssassin : Expo { 
 public:
 	using Expo::Expo;
 	virtual vtype getDamage(std::size_t const& build, vtype const& value1, vtype const& value2, size_t const& gold) {

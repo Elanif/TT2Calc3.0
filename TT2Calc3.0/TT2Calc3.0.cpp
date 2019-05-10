@@ -64,6 +64,18 @@ int main()
 	std::cout << SkillPowers.size();
 
 	Preprocessor preprocessor(0, 1, SkillPowers);
+	std::vector<SkillContainer>starting_build= preprocessor.getSkillContainer();
+	starting_build[0].level = 2;
+	starting_build[1].level = 1;
+	starting_build[2].level = 0;
+	starting_build[3].level = 9;
+	starting_build[4].level = 6;
+	for (std::size_t i = 0; i < 9; ++i) {
+		std::cout << tt2::skills[i].Name;
+		if (starting_build[i].unlocked(starting_build)) std::cout << " is unlocked";
+		else std::cout << " isn't unlocked";
+		std::cout << " and has a gettingTo of " << starting_build[i].gettingTo(starting_build) << "\n";
+	}
 }
 
 //TODO in buildimplementations: add way to make a skill add 0 damage: example lightning burst which is useless for pushing

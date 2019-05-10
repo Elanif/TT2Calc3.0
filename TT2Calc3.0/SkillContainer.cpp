@@ -11,7 +11,7 @@ bool SkillContainer::unlocked(std::vector<SkillContainer> const& _skillcont) con
 	if (skill.TalentReq == nullptr) return true; //root of skilltree
 	else {
 		const std::size_t indexreq = skill.TalentReq->index;
-		if (!_skillcont[indexreq].unlocked(_skillcont)) return false;
+		//if (!_skillcont[indexreq].unlocked(_skillcont)) return false;
 		if (_skillcont[indexreq].level <= 0) return false;
 		if (gettingTo(_skillcont) < skill.SPReq) return false;
 	}
@@ -19,28 +19,10 @@ bool SkillContainer::unlocked(std::vector<SkillContainer> const& _skillcont) con
 }
 ctype SkillContainer::gettingTo(std::vector<SkillContainer> const& _skillcont) const { //called from skill to end of branch 
 	//get current branch, work on all the previous skills but not the ones on the same level
-	switch (skill.Branch) {
-
-	};
-
-	/*switch (skill.Slot) {
-	case 0:
-		return 0;
-		break;
-	case 1: case 2: case 3:
-
-		return _skillcont[branch 0].cost
-		break;
-	case 4: case 5: case 6:
-		break;
-		return for sum from 0 to 3
-
-	case 7: case 8: case 9:
-		return for sum from 0 to 6
-		break;
-		create a list of pointers in skill.hpp/preprocessor
-	}*/
-	return 0;
+	ctype result = 0;
+	for (const auto& i : skill.GettingToArray)
+		result += _skillcont[i->index].getCurrentCost();
+	return result;
 }
 
 SkillContainer::SkillContainer(Skill const& _skill, std::size_t const& _maxLevel, std::vector<ctype> _skillCosts, std::vector<vtype> _skillEffects)
@@ -50,7 +32,7 @@ SkillContainer::SkillContainer(Skill const& _skill, std::size_t const& _maxLevel
 	skillEffects = _skillEffects;
 }
 
-ctype SkillContainer::getCost(std::size_t const& level) {
+ctype SkillContainer::getCost(std::size_t const& level) const {
 	if (ArrayGuards) {
 		if (level > maxLevel) throw "oob";
 	}
@@ -66,4 +48,18 @@ vtype SkillContainer::getEffect(std::size_t const& level) {
 
 std::size_t SkillContainer::getMaxLevel() {
 	return maxLevel;
+}
+
+vtype SkillContainer::getCurrentEffect() {
+	if (ArrayGuards) {
+		if (level > maxLevel) throw "oob";
+	}
+	return skillEffects[level];
+}
+
+ctype SkillContainer::getCurrentCost() const {
+	if (ArrayGuards) {
+		if (level > maxLevel) throw "oob";
+	}
+	return skillCosts[level];
 }

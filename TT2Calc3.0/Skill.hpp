@@ -32,6 +32,9 @@ public:
 	Skill const* TalentReq=nullptr;
 	void setTalentReq(Skill const* _TalentReq) { TalentReq = _TalentReq; }
 
+	std::vector<const Skill *> GettingToArray;
+	void addGettingTo(const Skill* _gettingToSkill) { GettingToArray.push_back(_gettingToSkill); }
+
 	static constexpr ctype Tier_size = 4;
 	ctype Tier=0;
 	bool setTier(std::string const& _Tier) {
