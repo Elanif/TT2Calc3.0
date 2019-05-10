@@ -63,8 +63,8 @@ int main()
 	SkillPowers.push_back(Zero()+ShadowAssassin(1));
 	std::cout << SkillPowers.size();
 
-	Preprocessor preprocessor(0, 1, SkillPowers);
-	std::vector<SkillContainer>starting_build= preprocessor.getSkillContainer();
+	Preprocessor::preprocess(0, 1, SkillPowers);
+	std::vector<SkillContainer>starting_build= Preprocessor::getSkillContainer();
 	starting_build[0].level = 2;
 	starting_build[1].level = 1;
 	starting_build[2].level = 0;

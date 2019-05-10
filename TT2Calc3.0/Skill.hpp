@@ -7,6 +7,16 @@
 class Skill
 {
 public:
+	Skill(std::size_t const& _MaxLevel) : MaxLevel(_MaxLevel) {}
+	Skill(){}
+	const std::size_t MaxLevel = 0;
+
+	vtype getEffect(std::size_t const& level) const { return skillEffects[level]; }
+	ctype getCost(std::size_t const& level) const { return skillCosts[level]; }
+	std::size_t getMaxLevel() { return MaxLevel; }
+	std::vector<ctype> skillCosts; //cumulative
+	std::vector<vtype> skillEffects;
+
 	std::size_t index = 0;
 	std::string TalentID="";
 	void setTalentID(std::string const& _TalentID) { TalentID = _TalentID; }
@@ -56,10 +66,7 @@ public:
 	std::string Note = "";
 	void setNote(std::string const& _Note) { Note = _Note; }
 
-	std::size_t MaxLevel = 0;
-	void setMaxLevel(std::string const& _MaxLevel) { MaxLevel = std::stoul(_MaxLevel); }
-
-	std::vector<ctype> cost;
+	std::vector<ctype> cost; //non cumulative
 	void setCost(std::vector<ctype> const& cost_vector) { cost = cost_vector; }
 
 	std::string BonusTypeAString;

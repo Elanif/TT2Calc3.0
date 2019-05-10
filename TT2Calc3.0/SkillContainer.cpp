@@ -1,9 +1,8 @@
 #include "SkillContainer.hpp"
 #include"Globals.hpp"
 
-template<typename ValueType, typename CostType, class SkillType>
-SkillContainerBase<ValueType, CostType, SkillType>::SkillContainerBase(SkillType const& _skill, std::size_t const& _maxLevel)
-:skill(_skill), maxLevel(_maxLevel)
+SkillContainer::SkillContainer(Skill const& _skill, std::size_t const& _maxLevel)
+	: SkillContainerBase<vtype, ctype, Skill>(_skill, _maxLevel)
 {
 }
 
@@ -25,41 +24,20 @@ ctype SkillContainer::gettingTo(std::vector<SkillContainer> const& _skillcont) c
 	return result;
 }
 
-SkillContainer::SkillContainer(Skill const& _skill, std::size_t const& _maxLevel, std::vector<ctype> _skillCosts, std::vector<vtype> _skillEffects)
-	:SkillContainerBase<vtype, ctype, Skill>(_skill, _maxLevel)
-{
-	skillCosts = _skillCosts;
-	skillEffects = _skillEffects;
-}
-
-ctype SkillContainer::getCost(std::size_t const& level) const {
-	if (ArrayGuards) {
-		if (level > maxLevel) throw "oob";
-	}
-	return skillCosts[level];
-}
-
-vtype SkillContainer::getEffect(std::size_t const& level) {
-	if (ArrayGuards) {
-		if (level > maxLevel) throw "oob";
-	}
-	return skillEffects[level];
-}
-
 std::size_t SkillContainer::getMaxLevel() {
 	return maxLevel;
 }
 
-vtype SkillContainer::getCurrentEffect() {
+vtype SkillContainer::getCurrentEffect() const{
 	if (ArrayGuards) {
 		if (level > maxLevel) throw "oob";
 	}
-	return skillEffects[level];
+	return skill.skillEffects[level];
 }
 
 ctype SkillContainer::getCurrentCost() const {
 	if (ArrayGuards) {
 		if (level > maxLevel) throw "oob";
 	}
-	return skillCosts[level];
+	return skill.skillCosts[level];
 }

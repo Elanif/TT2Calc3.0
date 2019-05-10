@@ -106,6 +106,49 @@ bool tt2::loadSkillTreeCSV(std::string const& csv_path) {
 		skill_counter++;
 	}
 
+	std::vector<const Skill*> GettingToArray;
+	std::vector<std::size_t> last_slots;
+
+	for (auto& skill: tt2::skills) {
+		if (last_slots.size() == 0) { //first iteration
+			last_slots.push_back(skill.Slot);
+			GettingToArray.push_back(&skill);
+		}
+		else if (skill.Slot <= last_slots[last_slots.size() - 1]) { //end of branch
+			GettingToArray.clear();
+			last_slots.clear();
+		}
+		else { //continuing through branch
+			last_slots.push_back(skill.Slot);
+			GettingToArray.push_back(&skill);
+		}
+
+		//result.push_back(SkillContainer(tt2::skills[i], skillMaxLevel[i], skillCost[i], skillEffect[i]));
+
+		std::size_t max_slot = 0;
+
+		switch (skill.Slot) {
+		case 0:
+			break;
+		case 1:case 2:case 3:
+			max_slot = 1;
+			break;
+		case 4:case 5:case 6:
+			max_slot = 4;
+			break;
+		case 7:case 8:case 9:
+			max_slot = 7;
+			break;
+		default:
+			max_slot = 0;
+			break;
+		}
+		for (std::size_t slot_it = 0; slot_it < last_slots.size(); ++slot_it) {
+			if (last_slots[slot_it] < max_slot)
+				skill.addGettingTo(GettingToArray[slot_it]);
+		}
+	}
+
 	for (auto const& i : skills) {
 		std::cout<<i.Name<<"\n";
 	}
@@ -114,30 +157,43 @@ bool tt2::loadSkillTreeCSV(std::string const& csv_path) {
 
 bool tt2::buildSkill(std::string const& TalentID, std::stringstream& line_stream, std::size_t const& skill_counter)
 {
-	Skill skill;
-	skill.index = skill_counter;
-	skill.setTalentID(TalentID);
-	std::string info = "";
+	std::string s_Branch; 
+	std::string s_Slot; 
+	std::string s_SPReq; 
+	std::string s_TalentReq; 
+	std::string s_Tier; 
+	std::string s_Name; 
+	std::string s_Note; 
+	std::string s_MaxLevel; 
 
-	//Branch
-	if (!std::getline(line_stream, info, ',')) return false;
-	if (!skill.setBranch(info)) {
+	if (!std::getline(line_stream, s_Branch, ',')) return false;
+	if (!std::getline(line_stream, s_Slot, ',')) return false;
+	if (!std::getline(line_stream, s_SPReq, ',')) return false;
+	if (!std::getline(line_stream, s_TalentReq, ',')) return false;
+	if (!std::getline(line_stream, s_Tier, ',')) return false;
+	if (!std::getline(line_stream, s_Name, ',')) return false;
+	if (!std::getline(line_stream, s_Note, ',')) return false;
+	if (!std::getline(line_stream, s_MaxLevel, ',')) return false;
+
+	Skill skill(std::stoull(s_MaxLevel));
+
+	skill.index = skill_counter;
+
+	skill.setTalentID(TalentID);
+	if (!skill.setBranch(s_Branch)) {
 		std::cout << "Couldn't set branch\n";
 		return false;
 	}
-	//Slot
-	if (!std::getline(line_stream, info, ',')) return false;
-	skill.setSlot(info);
-	//SPReq
-	if (!std::getline(line_stream, info, ',')) return false;
-	skill.setSPReq(info);
-	//TalentReq
-	if (!std::getline(line_stream, info, ',')) return false;
+	
+	skill.setSlot(s_Slot);
+
+	skill.setSPReq(s_SPReq);
+
 	skill.TalentReq = nullptr;
-	if (info != "None") {
+	if (s_TalentReq != "None") {
 		std::size_t found = 0;
 		for (auto const& i : skills) {
-			if (i.TalentID == info) {
+			if (i.TalentID == s_TalentReq) {
 				skill.setTalentReq(&i);
 				++found;
 			}
@@ -145,44 +201,38 @@ bool tt2::buildSkill(std::string const& TalentID, std::stringstream& line_stream
 		if (found != 1) {
 			if (found == 0) std::cout << "No TalentID requirement found";
 			else std::cout << "Too many TalentID requirements found";
-			std::cout << " looking for " << info << " from " << skill.TalentID << "\n";
+			std::cout << " looking for " << s_TalentReq << " from " << skill.TalentID << "\n";
 			return false;
 		}
 	}
-	//Tier
-	if (!std::getline(line_stream, info, ',')) return false;
-	if (!skill.setTier(info)) {
+
+	if (!skill.setTier(s_Tier)) {
 		std::cout << "Couldn't set tier\n";
 		return false;
 	}
-	//Name
-	if (!std::getline(line_stream, info, ',')) return false;
-	skill.setName(info);
-	//Note
-	if (!std::getline(line_stream, info, ',')) return false;
-	skill.setNote(info);
-	//MaxLevel
-	if (!std::getline(line_stream, info, ',')) return false;
-	skill.setMaxLevel(info);
 
+	skill.setName(s_Name);
+
+	skill.setNote(s_Note);
+
+
+	std::string info = "";
 	//trash useless data
 	for (std::size_t i = 0; i < maxMaxLevel; ++i) {
 		if (!std::getline(line_stream, info, ',')) return false;
 	}
-	//SKill costs
+
 	skill.setCost(getArray<ctype>(line_stream, skill.MaxLevel));
 	for (auto const& i : skill.cost) {
 		std::cout << i << " ";
 	}
 	std::cout << "\n";
 
-	//trash useless data until BonusTypeAString
 	while (std::getline(line_stream, info, ',')) {
 		if (info.length() > 0 && info != "-") break;
 	}
 	skill.setBonusTypeAString(info);
 
-	//BonusTypeA
 	skill.setBonusTypeA(getArray<vtype>(line_stream, skill.MaxLevel));
 	for (auto const& i : skill.BonusTypeA) {
 		std::cout << i << " ";
@@ -195,13 +245,11 @@ bool tt2::buildSkill(std::string const& TalentID, std::stringstream& line_stream
 	}
 	skill.setBonusTypeBString(info);
 
-	//BonusTypeB
 	skill.setBonusTypeB(getArray<vtype>(line_stream, skill.MaxLevel));
 	for (auto const& i : skill.BonusTypeB) {
 		std::cout << i << " ";
 	}
 	std::cout << "\n";
-
 
 	skills.push_back(skill);
 	return true;
