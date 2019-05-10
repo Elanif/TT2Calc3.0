@@ -181,7 +181,7 @@ bool tt2::buildSkill(std::string const& TalentID, std::stringstream& line_stream
 
 	skill.setTalentID(TalentID);
 	if (!skill.setBranch(s_Branch)) {
-		std::cout << "Couldn't set branch\n";
+		std::cout << "Couldn't set branch "<< s_Branch<< "\n";
 		return false;
 	}
 	

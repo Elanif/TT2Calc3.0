@@ -57,25 +57,40 @@ template <typename ValueType, typename CostType, typename SkillType>
 class BuildBase {
 public:
 
-	virtual ValueType getValue() = 0;
-	virtual CostType getCost() = 0;
-	virtual bool operator <=(BuildBase const&) = 0;
-	virtual bool operator ==(BuildBase const&) = 0;
-	static bool lessequal(BuildBase const&, BuildBase const&);
-	static bool valueLessequal(BuildBase const&, BuildBase const&);
-	static bool costLessequal(BuildBase const&, BuildBase const&);
+	virtual ValueType getValue() const = 0;
+	virtual CostType getCost() const = 0;
 
-	virtual bool unlocked(SkillType const& skill) = 0;
+	virtual bool unlocked(std::size_t const& skill_index) const = 0;
+	virtual CostType gettingTo(std::size_t const& skill_index) const = 0;
+
+	virtual bool operator <=(BuildBase const&) const = 0;
+	virtual bool operator ==(BuildBase const&) const = 0;
+	static bool lessequal(BuildBase const&, BuildBase const&);/*
+	static bool valueLessequal(BuildBase const&, BuildBase const&);
+	static bool costLessequal(BuildBase const&, BuildBase const&);*/
+
 
 protected:
-	virtual CostType gettingTo(SkillType const& skill) = 0;
 };
 
 class Build : public BuildBase<vtype, ctype, SkillContainer> {
-protected:
-	vtype pure_vtype = 1;
 public:
-	vtype getValue(); //could just multiply pure_vtype by the new value;
+	vtype pure_vtype = 1;
+	vtype getValue() const; //could just multiply pure_vtype by the new value;
 
+	ctype getCost() const;
+
+	bool unlocked(std::size_t const& skill_index) const;
+	ctype gettingTo(std::size_t const& skill_index) const;
+
+	std::size_t last_leveled_skill = 0;
+
+	std::vector<SkillContainer> d;//d cause thats how I called it in my old optimizer
+
+	bool operator <=(Build const&) const;
+	bool operator ==(Build const&) const;
+	static bool lessequal(Build const&, Build const&);
+	/*static bool valueLessequal(Build const&, Build const&);
+	static bool costLessequal(Build const&, Build const&);*/
 
 };

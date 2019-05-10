@@ -30,6 +30,8 @@ public:
 	} Branch=(BRANCH)0;
 
 	static std::tuple<std::size_t, std::size_t> branch_range[Branch_size];
+	std::size_t block_start = 0;
+	std::size_t block_end = 0;
 
 	bool setBranch(std::string const& _Branch);
 

@@ -1,8 +1,5 @@
 #pragma once
 
-#pragma once
-#ifndef __GIACOMOR_H__
-#define __GIACOMOR_H__
 #include<list>
 
 template<class T>
@@ -32,4 +29,3 @@ void tierordering(const size_t& tiers, const size_t T::* _lvlprogression(const s
 
 template<class T>
 void tierordering(const size_t& tiers, const T& firstchild, const size_t& skillnumber, const size_t(T::* lvlprogression)(const size_t&, const size_t&), size_t(T::* _build)(const size_t&, const size_t&));
-#endif
