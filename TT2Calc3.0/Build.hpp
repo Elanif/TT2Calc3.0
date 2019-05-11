@@ -7,6 +7,7 @@
 #include"tt2.hpp"
 #include"Skill.hpp"
 #include"SkillContainer.hpp"
+#include<ostream>
 
 template <typename ValueType>
 class DMGType {
@@ -63,8 +64,8 @@ public:
 	virtual bool unlocked(std::size_t const& skill_index) const = 0;
 	virtual CostType gettingTo(std::size_t const& skill_index) const = 0;
 
-	virtual bool operator <=(BuildBase const&) const = 0;
-	virtual bool operator ==(BuildBase const&) const = 0;
+	/*virtual bool operator <=(BuildBase const&) const = 0;
+	virtual bool operator ==(BuildBase const&) const = 0;*/
 	static bool lessequal(BuildBase const&, BuildBase const&);/*
 	static bool valueLessequal(BuildBase const&, BuildBase const&);
 	static bool costLessequal(BuildBase const&, BuildBase const&);*/
@@ -75,22 +76,32 @@ protected:
 
 class Build : public BuildBase<vtype, ctype, SkillContainer> {
 public:
-	vtype pure_vtype = 1;
+	Build(std::vector<SkillContainer> _d)
+		:d(_d)
+	{}
+
 	vtype getValue() const; //could just multiply pure_vtype by the new value;
 
 	ctype getCost() const;
+
+	bool levelUp(std::size_t skill_to_levelup, std::size_t skill_level);
 
 	bool unlocked(std::size_t const& skill_index) const;
 	ctype gettingTo(std::size_t const& skill_index) const;
 
 	std::size_t last_leveled_skill = 0;
+	bool raw = true;
 
 	std::vector<SkillContainer> d;//d cause thats how I called it in my old optimizer
+
+	void print(std::ostream& out_stream) const;
 
 	bool operator <=(Build const&) const;
 	bool operator ==(Build const&) const;
 	static bool lessequal(Build const&, Build const&);
 	/*static bool valueLessequal(Build const&, Build const&);
 	static bool costLessequal(Build const&, Build const&);*/
+
+	vtype pure_vtype = 1;
 
 };

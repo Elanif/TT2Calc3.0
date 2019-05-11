@@ -3,17 +3,26 @@
 vtype Build::getValue() const
 {
 	vtype result = 1;
-	for (std::size_t i = 0; i < last_leveled_skill; ++i)
-		result *= d[i].getCurrentEffect();
+	for (std::size_t i = 0; i <= last_leveled_skill&&i<d.size(); ++i)
+		result *= d[i].getCurrentEffect()<=0?1:d[i].getCurrentEffect();
 	return result;
 }
 
 ctype Build::getCost() const
 {
 	ctype result = 0;
-	for (std::size_t i = 0; i < last_leveled_skill; ++i)
+	for (std::size_t i = 0; i <= last_leveled_skill; ++i)
 		result += d[i].getCurrentCost();
 	return result;
+}
+
+bool Build::levelUp(std::size_t skill_to_levelup, std::size_t skill_level)
+{
+	raw = false;
+	if (skill_level > d[skill_to_levelup].maxLevel) return false;
+	last_leveled_skill = skill_to_levelup;
+	d[skill_to_levelup].level = skill_level;
+	return true;
 }
 
 bool Build::unlocked(std::size_t const& skill_index) const
@@ -26,9 +35,18 @@ ctype Build::gettingTo(std::size_t const& skill_index) const
 	return d[skill_index].gettingTo(d);
 }
 
-bool Build::operator<=(Build const&) const
+void Build::print(std::ostream& out_stream) const
 {
-	return false;
+	out_stream << getValue();
+	for (const auto& i : d) {
+		out_stream <<" "<< i.level << " ";
+	}
+	out_stream << "\n";
+}
+
+bool Build::operator<=(Build const& build) const
+{
+	return lessequal(*this, build);
 }
 
 bool Build::operator==(Build const& build) const

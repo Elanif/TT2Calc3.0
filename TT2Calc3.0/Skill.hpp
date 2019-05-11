@@ -21,12 +21,13 @@ public:
 	std::string TalentID="";
 	void setTalentID(std::string const& _TalentID) { TalentID = _TalentID; }
 
-	static constexpr std::size_t Branch_size = 4;
+	static constexpr std::size_t Branch_size = 5;
 	enum BRANCH {
 		KNIGHT=0,
 		WARLORD,
 		SORCERER,
-		ASSASSIN
+		ASSASSIN,
+		EMPTY
 	} Branch=(BRANCH)0;
 
 	static std::tuple<std::size_t, std::size_t> branch_range[Branch_size];

@@ -3,16 +3,12 @@
 #include"BuildImplementations.hpp"
 #include"Preprocessor.hpp"
 #include<vector>
+#include"Optimizer.hpp"
 
 int main()
 {
 	tt2::initExpos();
-
-	Zero test = Zero()+ LightningStrike();
-	Zero test2 = Zero()+ AnchoringShot();
-	std::cout <<"LS "<< test .getDamage(tt2::SC, 0.1532, 0.941, tt2::PHOMGOLD) << "\n";
-	std::cout <<"AS "<< test2 .getDamage(tt2::SC, 10, 0.941, tt2::PHOMGOLD) << "\n\n";
-
+	
 	std::string skilltree_csv = "SkillTreeInfo2.0.csv";
 	if (tt2::loadSkillTreeCSV(skilltree_csv)) {
 		std::cout << skilltree_csv << " loaded successfully\n";
@@ -61,21 +57,54 @@ int main()
 	SkillPowers.push_back(Zero()+TwilightVeil(1));
 	SkillPowers.push_back(Zero()+GhostShip(1));
 	SkillPowers.push_back(Zero()+ShadowAssassin(1));
-	std::cout << SkillPowers.size();
+	std::cout << SkillPowers.size()<< "skills\n";
 
 	Preprocessor::preprocess(0, 1, SkillPowers);
-	std::vector<SkillContainer>starting_build= Preprocessor::getSkillContainer();
-	starting_build[0].level = 2;
-	starting_build[1].level = 1;
-	starting_build[2].level = 0;
-	starting_build[3].level = 9;
-	starting_build[4].level = 6;
-	for (std::size_t i = 0; i < 9; ++i) {
-		std::cout << tt2::skills[i].Name;
-		if (starting_build[i].unlocked(starting_build)) std::cout << " is unlocked";
-		else std::cout << " isn't unlocked";
-		std::cout << " and has a gettingTo of " << starting_build[i].gettingTo(starting_build) << "\n";
+	std::vector<SkillContainer>starting_container = Preprocessor::getSkillContainer();
+
+	Build test_unlock(starting_container);
+	test_unlock.d[0].level =2 ;
+	test_unlock.d[1].level = 1;
+	test_unlock.d[2].level = 0;
+	test_unlock.d[3].level = 9;
+	test_unlock.d[4].level = 8;
+	test_unlock.d[5].level = 0;
+	test_unlock.d[6].level = 0;
+	test_unlock.d[7].level = 5;
+	test_unlock.d[8].level = 0;
+
+	test_unlock.d[9].level = 2;
+	std::cout << test_unlock.unlocked(9) << "\n";
+	std::cout << test_unlock.unlocked(10) << "\n";
+	std::cout << test_unlock.unlocked(11) << "\n";
+
+	for (const auto& i : Skill::branch_range) {
+		std::cout << std::get<0>(i) << "," << std::get<1>(i) << "\n";
 	}
+	Skill::branch_range[0] = std::make_tuple(0, 9);
+	Skill::branch_range[1] = std::make_tuple(9, 18);
+	Skill::branch_range[2] = std::make_tuple(18, 28);
+	Skill::branch_range[3] = std::make_tuple(28, 36);
+	Skill::branch_range[4] = std::make_tuple(0, 0);
+
+	Build build1(starting_container);
+
+	constexpr std::size_t max_skillpoints = 1500;
+
+	tiercontainer <Build> tier_orderer(max_skillpoints, build1);
+	tier_orderer.order(max_skillpoints, 35);
+	if (DebugMode) {
+		for (std::size_t i = 0; i < 100; i += 10) {
+			std::cout << "COST:" << i << "\n";
+			for (const auto& i : tier_orderer.tierlist[i])
+				i.print(std::cout);
+		}
+	}
+	auto value_less_equal = [](Build const& b1, Build const& b2) {return b1.getValue() <= b2.getValue(); };
+	std::vector<Build> ordering=tier_orderer.print(value_less_equal);
+	for (const auto& i : ordering)
+		i.print(std::cout);
+
 }
 
 //TODO in buildimplementations: add way to make a skill add 0 damage: example lightning burst which is useless for pushing

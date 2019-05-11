@@ -92,9 +92,9 @@ bool tt2::loadSkillTreeCSV(std::string const& csv_path) {
 
 		}
 	}
-	for (const auto i : skilltree_header) {
+	/*for (const auto i : skilltree_header) {
 		std::cout << std::get<std::string>(i) <<":"<<std::get<std::size_t>(i)<< "\n";
-	}
+	}*/
 
 	std::size_t skill_counter = 0;
 	while (safeGetline(skilltree_csv, line)) {
@@ -117,6 +117,8 @@ bool tt2::loadSkillTreeCSV(std::string const& csv_path) {
 		else if (skill.Slot <= last_slots[last_slots.size() - 1]) { //end of branch
 			GettingToArray.clear();
 			last_slots.clear();
+			last_slots.push_back(skill.Slot);
+			GettingToArray.push_back(&skill);
 		}
 		else { //continuing through branch
 			last_slots.push_back(skill.Slot);
@@ -149,9 +151,9 @@ bool tt2::loadSkillTreeCSV(std::string const& csv_path) {
 		}
 	}
 
-	for (auto const& i : skills) {
+	/*for (auto const& i : skills) {
 		std::cout<<i.Name<<"\n";
-	}
+	}*/
 	return true;
 }
 
@@ -223,10 +225,12 @@ bool tt2::buildSkill(std::string const& TalentID, std::stringstream& line_stream
 	}
 
 	skill.setCost(getArray<ctype>(line_stream, skill.MaxLevel));
-	for (auto const& i : skill.cost) {
-		std::cout << i << " ";
+	if (DebugMode) {
+		for (auto const& i : skill.cost) {
+			std::cout << i << " ";
+		}
+		std::cout << "\n";
 	}
-	std::cout << "\n";
 
 	while (std::getline(line_stream, info, ',')) {
 		if (info.length() > 0 && info != "-") break;
@@ -234,10 +238,13 @@ bool tt2::buildSkill(std::string const& TalentID, std::stringstream& line_stream
 	skill.setBonusTypeAString(info);
 
 	skill.setBonusTypeA(getArray<vtype>(line_stream, skill.MaxLevel));
-	for (auto const& i : skill.BonusTypeA) {
-		std::cout << i << " ";
+
+	if (DebugMode) {
+		for (auto const& i : skill.BonusTypeA) {
+			std::cout << i << " ";
+		}
+		std::cout << "\n";
 	}
-	std::cout << "\n";
 
 	//trash useless data until BonusTypeBString
 	while (std::getline(line_stream, info, ',')) {
@@ -246,10 +253,13 @@ bool tt2::buildSkill(std::string const& TalentID, std::stringstream& line_stream
 	skill.setBonusTypeBString(info);
 
 	skill.setBonusTypeB(getArray<vtype>(line_stream, skill.MaxLevel));
-	for (auto const& i : skill.BonusTypeB) {
-		std::cout << i << " ";
+
+	if (DebugMode) {
+		for (auto const& i : skill.BonusTypeB) {
+			std::cout << i << " ";
+		}
+		std::cout << "\n";
 	}
-	std::cout << "\n";
 
 	skills.push_back(skill);
 	return true;
