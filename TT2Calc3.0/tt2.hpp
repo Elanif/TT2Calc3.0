@@ -8,7 +8,7 @@
 class tt2 {
 public:
 
-
+	static void init();
 	static constexpr std::size_t builds_size = 4;
 	static constexpr const char* build_names[4] = {
 		"SC",

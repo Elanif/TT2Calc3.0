@@ -170,6 +170,7 @@
     <ClInclude Include="tt2.hpp" />
     <ClInclude Include="Preprocessor.hpp" />
     <ClInclude Include="Skill.hpp" />
+    <ClInclude Include="TT2Calc3.0.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

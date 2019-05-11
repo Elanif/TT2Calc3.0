@@ -98,7 +98,7 @@ void tiercontainer<T>::order(const std::size_t& tiers, std::size_t const& skilln
 	std::vector<bool> levelup(skillnumber, false);
 	std::vector<bool> tiercost(skillnumber, false);
 
-	for (std::size_t skill_it = 0; skill_it < skillnumber; ++skill_it) { // do it for skillnumber-1 and in the last iteration use value_lessequal since unlocking doesnt matter
+	for (std::size_t skill_it = 0; skill_it < skillnumber-1; ++skill_it) { // do it for skillnumber-1 and in the last iteration use value_lessequal since unlocking doesnt matter
 		std::cout << "Skill number " << skill_it <<"\n";
 		if (DebugMode) {
 			std::size_t item_count = 0;
@@ -127,6 +127,39 @@ void tiercontainer<T>::order(const std::size_t& tiers, std::size_t const& skilln
 		}
 		swap();
 	}
+	{
+		std::size_t last_skill = skillnumber - 1;
+		std::cout << "Skill number " << last_skill << "\n";
+		if (DebugMode) {
+			std::size_t item_count = 0;
+			for (size_t cycle = 0; cycle < tiers; ++cycle) item_count += tierlist[cycle].size();
+			std::cout << "Total list size " << item_count << "\n";
+		}
+		for (size_t cycle = 0; cycle < tiers; ++cycle) while (!empty(cycle)) {
+			T cycle_root = extract_front(cycle);
+			if (cycle_root.unlocked(last_skill)) for (std::size_t skill_level_it = 0;; ++skill_level_it) {
+				if (DebugMode)unlocked[last_skill] = true;
+				T modified_root = cycle_root;
+
+				if (!modified_root.levelUp(last_skill, skill_level_it)) break;
+				if (DebugMode)levelup[last_skill] = true;
+				std::size_t tier_cost = modified_root.getCost(); //always call this after levelUp
+
+				if (tier_cost > tiers) break;
+				if (DebugMode)tiercost[last_skill] = true;
+				add(tier_cost, modified_root);
+			}
+			else {
+				T modified_root = cycle_root;
+				modified_root.levelUp(last_skill, 0);
+				add(modified_root.getCost(), modified_root);
+			}
+		}
+		swap();
+	}
+
+
+
 	if (DebugMode) for (std::size_t i = 0; i < skillnumber; ++i) {
 		std::cout << i<<":"<<unlocked[i] << "," << levelup[i] << ","<< tiercost[i] << "\n";
 	}
@@ -157,25 +190,20 @@ T tiercontainer<T>::extract_front(const std::size_t& _tier) {
 
 template<class T>
 bool tiercontainer<T>::insert(const std::size_t& _tier, const T& candidate) {
-	bool pushback = true;
+
 	for (typename std::list<T>::iterator it = _temptierlist[_tier].begin(); it != _temptierlist[_tier].end(); ) {
 		if ((*it) <= candidate) {
 			_temptierlist[_tier].erase(it++);
 		}
 		else {
 			if (candidate <= (*it)) {
-				it = _temptierlist[_tier].end();
-				pushback = false;
+				return false;
 			}
 			else ++it;
 		}
 	}
-	if (pushback) add(_tier, candidate);/*
-	if (pushback) {
-		std::cout << "Adding :";
-		candidate.print(std::cout);
-	}*/
-	return pushback;
+	add(_tier, candidate);
+	return true;
 }
 
 template<class T>

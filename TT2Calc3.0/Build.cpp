@@ -1,11 +1,19 @@
 #include "Build.hpp"
+#include<iostream>
 
 vtype Build::getValue() const
 {
-	vtype result = 1;
-	for (std::size_t i = 0; i <= last_leveled_skill&&i<d.size(); ++i)
-		result *= d[i].getCurrentEffect()<=0?1:d[i].getCurrentEffect();
-	return result;
+	if (raw) {
+		vtype result = 1;
+		for (std::size_t i = 0; i <= last_leveled_skill && i < d.size(); ++i) {
+			if (DebugMode) std::cout << d[i].skill.get().Name << "[" << d[i].level << "]=" << d[i].getCurrentEffect() << "\n";
+			result *= d[i].getCurrentEffect() <= 1 ? 1 : d[i].getCurrentEffect();
+		}
+		return result;
+	}
+	else {
+		return pure_vtype;
+	}
 }
 
 ctype Build::getCost() const
@@ -22,6 +30,7 @@ bool Build::levelUp(std::size_t skill_to_levelup, std::size_t skill_level)
 	if (skill_level > d[skill_to_levelup].maxLevel) return false;
 	last_leveled_skill = skill_to_levelup;
 	d[skill_to_levelup].level = skill_level;
+	pure_vtype*= d[skill_to_levelup].getCurrentEffect() <= 1 ? 1 : d[skill_to_levelup].getCurrentEffect();
 	return true;
 }
 
@@ -37,9 +46,9 @@ ctype Build::gettingTo(std::size_t const& skill_index) const
 
 void Build::print(std::ostream& out_stream) const
 {
-	out_stream << getValue();
+	out_stream << "SP:" << getCost()<<" DMG:"<< getValue();
 	for (const auto& i : d) {
-		out_stream <<" "<< i.level << " ";
+		out_stream <<" "<< i.level;
 	}
 	out_stream << "\n";
 }

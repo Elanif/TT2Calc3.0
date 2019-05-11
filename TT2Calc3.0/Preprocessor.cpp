@@ -17,7 +17,7 @@ void Preprocessor::preprocess(std::size_t const& build, std::size_t const& gold,
 		skill_it.skillEffects.resize(skill_it.MaxLevel + 1ull);
 		skill_it.skillEffects[0] = 1;
 		for (std::size_t level = 1; level < skill_it.skillEffects.size(); ++level) {
-			skill_it.skillEffects[level] = SkillPowers[skill_iter].getDamage(skill_iter, skill_it.BonusTypeA[level], skill_it.BonusTypeB[level], gold);
+			skill_it.skillEffects[level] = SkillPowers[skill_iter].getDamage(build, skill_it.BonusTypeA[level], skill_it.BonusTypeB[level], gold);
 		}
 	}
 }

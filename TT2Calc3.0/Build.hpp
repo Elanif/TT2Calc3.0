@@ -54,27 +54,8 @@ public:
 	}
 };
 
-template <typename ValueType, typename CostType, typename SkillType>
-class BuildBase {
-public:
 
-	virtual ValueType getValue() const = 0;
-	virtual CostType getCost() const = 0;
-
-	virtual bool unlocked(std::size_t const& skill_index) const = 0;
-	virtual CostType gettingTo(std::size_t const& skill_index) const = 0;
-
-	/*virtual bool operator <=(BuildBase const&) const = 0;
-	virtual bool operator ==(BuildBase const&) const = 0;*/
-	static bool lessequal(BuildBase const&, BuildBase const&);/*
-	static bool valueLessequal(BuildBase const&, BuildBase const&);
-	static bool costLessequal(BuildBase const&, BuildBase const&);*/
-
-
-protected:
-};
-
-class Build : public BuildBase<vtype, ctype, SkillContainer> {
+class Build {
 public:
 	Build(std::vector<SkillContainer> _d)
 		:d(_d)

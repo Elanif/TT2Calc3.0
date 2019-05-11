@@ -6,6 +6,12 @@
 #include<tuple>
 #include"Globals.hpp"
 
+void tt2::init() {
+	initExpos();
+	initGoldExpos();
+	initInsightMult();
+}
+
 vtype tt2::ancient_warrior = 2; 
 vtype tt2::sc_base_aps = 4; 
 vtype tt2::heroic_might_inspired_heroes = 6; //debatable
