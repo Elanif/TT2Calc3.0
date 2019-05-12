@@ -119,7 +119,7 @@ public:
 	virtual vtype getDamage(std::size_t const& build, vtype const& value1, vtype const& value2, size_t const& gold) {
 		if (DebugMode) std::cout << "PHoMCooldown::getDamage"<<build<<","<<value1<<","<<value2<<","<<gold<<"\n";
 
-		return pow(tt2::phom_cd / (tt2::phom_cd - value2), tt2::dmg_expos[build][tt2::PHOMGOLD]);
+		return pow(tt2::phom_cd / (tt2::phom_cd - value2), tt2::gold_expos[gold][tt2::PHOMGOLD]);
 	}
 };
 
@@ -129,7 +129,7 @@ public:
 		if (DebugMode) std::cout << "MaxCritDamageAndCritChance::getDamage"<<build<<","<<value1<<","<<value2<<","<<gold<<"\n";
 
 		if (tt2::crit_chance + value2 <= 0) return 1; // this also applies to HS even if it has an expo of 0
-		return pow((tt2::crit_chance - value2) / tt2::crit_chance, tt2::dmg_expos[build][tt2::CRITCHANCE]) * pow((1 + tt2::max_crit_damage_ratio * value1) / (1 + tt2::max_crit_damage_ratio), tt2::dmg_expos[build][tt2::CRITDAMAGE]);
+		return pow((tt2::crit_chance + value2) / tt2::crit_chance, tt2::dmg_expos[build][tt2::CRITCHANCE]) * pow((1 + tt2::max_crit_damage_ratio * value1) / (1 + tt2::max_crit_damage_ratio), tt2::dmg_expos[build][tt2::CRITDAMAGE]);
 	}
 };
 
@@ -139,8 +139,7 @@ public:
 	virtual vtype getDamage(std::size_t const& build, vtype const& value1, vtype const& value2, size_t const& gold) {
 		if (DebugMode) std::cout << "FireSwordDamage::getDamage"<<build<<","<<value1<<","<<value2<<","<<gold<<"\n";
 
-		expo = tt2::gold_expos[gold][tt2::FIRESWORDDAMAGE];
-		return Expo::getDamage(build, value1, value2, gold);
+		return pow(value1, expo * tt2::dmg_expos[build][tt2::FIRESWORDDAMAGE]);
 	}
 };
 
@@ -191,7 +190,7 @@ class SearingLight {
 public:
 	virtual vtype getDamage(std::size_t const& build, vtype const& value1, vtype const& value2, size_t const& gold) {
 		if (DebugMode) std::cout << "SearingLight::getDamage"<<build<<","<<value1<<","<<value2<<","<<gold<<"\n";
-		return (1 + value1 * tt2::fight_duration * (tt2::heroic_might_inspired_heroes + value2) * 2.5+1.L)/2.L;
+		return pow((1 + value1 * tt2::fight_duration * (tt2::heroic_might_inspired_heroes + value2) * 2.5+1.L)/2.L,tt2::dmg_expos[build][tt2::ALLHERODAMAGE]);
 	}
 };
 
@@ -200,7 +199,7 @@ public:
 	virtual vtype getDamage(std::size_t const& build, vtype const& value1, vtype const& value2, size_t const& gold) {
 		if (DebugMode) std::cout << "AnchoringShot::getDamage"<<build<<","<<value1<<","<<value2<<","<<gold<<"\n";
 		vtype spawns = tt2::clanshot_cooldown / tt2::spawn_time;
-		return (value1 - 1.) / spawns + 1.;
+		return pow((value1 - 1.) / spawns + 1.,tt2::dmg_expos[build][tt2::ALLDAMAGE]);
 	}
 };
 

@@ -61,7 +61,10 @@ int main()
 	SkillPowers.push_back(Zero()+ShadowAssassin());
 	std::cout << SkillPowers.size()<< "skills\n";
 
-	Preprocessor::preprocess(0, 0, SkillPowers);
+	constexpr std::size_t build=tt2::HS;
+	constexpr std::size_t gold=tt2::PHOMGOLD;
+
+	Preprocessor::preprocess(build, gold, SkillPowers);
 	std::vector<SkillContainer>starting_container = Preprocessor::getSkillContainer();
 
 	Build bad_build(starting_container);
@@ -85,7 +88,32 @@ int main()
 
 	tiercontainer <Build> tier_orderer(max_skillpoints, first_child);
 	tier_orderer.order(max_skillpoints, tt2::skills.size());
-	std::fstream output_text("output.txt", std::ios::out);
+
+	std::string output_name = "";
+	switch (build) {
+	case tt2::SC:
+		output_name += "SC ";
+		break;
+	case tt2::HS:
+		output_name += "HS";
+		break;
+	case tt2::Pet:
+		output_name += "Pet ";
+		break;
+	case tt2::CS:
+		output_name += "CS ";
+		break;
+	}
+
+	switch (gold) {
+	case tt2::PHOMGOLD:
+		output_name += "pHoM ";
+		break;
+	}
+
+	output_name += ".txt";
+
+	std::fstream output_text(output_name, std::ios::out);
 
 	std::vector<Build> ordering=tier_orderer.print(Build::value_lessequal);
 	for (const auto& i : ordering)
