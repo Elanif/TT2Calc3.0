@@ -78,3 +78,8 @@ bool Build::lessequal(Build const& build1, Build const& build2)
 	}
 	return true;
 }
+
+bool Build::value_lessequal(Build const& b1, Build const& b2)
+{
+	return b1.getValue() <= b2.getValue();
+}

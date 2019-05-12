@@ -80,7 +80,7 @@ public:
 	bool operator <=(Build const&) const;
 	bool operator ==(Build const&) const;
 	static bool lessequal(Build const&, Build const&);
-	/*static bool valueLessequal(Build const&, Build const&);
+	static bool value_lessequal(Build const&, Build const&);/*
 	static bool costLessequal(Build const&, Build const&);*/
 
 	vtype pure_vtype = 1;

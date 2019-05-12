@@ -107,9 +107,14 @@ void tiercontainer<T>::order(const std::size_t& tiers, std::size_t const& skilln
 		}
 		for (size_t cycle = 0; cycle < tiers; ++cycle) while (!empty(cycle)) {
 			T cycle_root = extract_front(cycle);
-			if (cycle_root.unlocked(skill_it)) for (std::size_t skill_level_it = 0;; ++skill_level_it) {
+			T modified_root = cycle_root;
+			{
+				modified_root.levelUp(skill_it, 0);
+				insert(modified_root.getCost(), modified_root);
+			}
+			if (cycle_root.unlocked(skill_it)) for (std::size_t skill_level_it = 1;; ++skill_level_it) {
 				if (DebugMode)unlocked[skill_it] = true;
-				T modified_root = cycle_root;
+				modified_root = cycle_root;
 
 				if (!modified_root.levelUp(skill_it, skill_level_it)) break;
 				if (DebugMode)levelup[skill_it] = true;
@@ -118,11 +123,6 @@ void tiercontainer<T>::order(const std::size_t& tiers, std::size_t const& skilln
 				if (tier_cost > tiers) break;
 				if (DebugMode)tiercost[skill_it] = true;
 				insert(tier_cost, modified_root);
-			}
-			else {
-				T modified_root = cycle_root;
-				modified_root.levelUp(skill_it, 0);
-				insert(modified_root.getCost(), modified_root);
 			}
 		}
 		swap();
@@ -137,9 +137,14 @@ void tiercontainer<T>::order(const std::size_t& tiers, std::size_t const& skilln
 		}
 		for (size_t cycle = 0; cycle < tiers; ++cycle) while (!empty(cycle)) {
 			T cycle_root = extract_front(cycle);
-			if (cycle_root.unlocked(last_skill)) for (std::size_t skill_level_it = 0;; ++skill_level_it) {
+			T modified_root = cycle_root;
+			{
+				modified_root.levelUp(last_skill, 0);
+				add(modified_root.getCost(), modified_root);
+			}
+			if (cycle_root.unlocked(last_skill)) for (std::size_t skill_level_it = 1;; ++skill_level_it) {
 				if (DebugMode)unlocked[last_skill] = true;
-				T modified_root = cycle_root;
+				modified_root = cycle_root;
 
 				if (!modified_root.levelUp(last_skill, skill_level_it)) break;
 				if (DebugMode)levelup[last_skill] = true;
@@ -148,11 +153,6 @@ void tiercontainer<T>::order(const std::size_t& tiers, std::size_t const& skilln
 				if (tier_cost > tiers) break;
 				if (DebugMode)tiercost[last_skill] = true;
 				add(tier_cost, modified_root);
-			}
-			else {
-				T modified_root = cycle_root;
-				modified_root.levelUp(last_skill, 0);
-				add(modified_root.getCost(), modified_root);
 			}
 		}
 		swap();
@@ -213,7 +213,6 @@ bool tiercontainer<T>::empty(const std::size_t& _tier) {
 
 template<class T>
 std::vector<T> tiercontainer<T>::print(bool _lessequal(const T& a, const T& b)) {
-	typename std::list<T>::iterator;
 	std::vector<T> maxdamage(tiers, root);
 	for (int k = 1; k < tiers; ++k) {
 		if (tierlist[k].size() > 0) {

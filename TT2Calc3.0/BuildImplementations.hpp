@@ -191,7 +191,7 @@ class SearingLight {
 public:
 	virtual vtype getDamage(std::size_t const& build, vtype const& value1, vtype const& value2, size_t const& gold) {
 		if (DebugMode) std::cout << "SearingLight::getDamage"<<build<<","<<value1<<","<<value2<<","<<gold<<"\n";
-		return 1 + value1 * tt2::fight_duration * (tt2::heroic_might_inspired_heroes + value2) * 2.5;
+		return (1 + value1 * tt2::fight_duration * (tt2::heroic_might_inspired_heroes + value2) * 2.5+1.L)/2.L;
 	}
 };
 
@@ -218,9 +218,19 @@ class FairyGold : Expo {
 public:
 	using Expo::Expo;
 	virtual vtype getDamage(std::size_t const& build, vtype const& value1, vtype const& value2, size_t const& gold) {
-		if (DebugMode) std::cout << "FairyGold::getDamage"<<build<<","<<value1<<","<<value2<<","<<gold<<"\n";
+		if (DebugMode) std::cout << "FairyGold::getDamage" << build << "," << value1 << "," << value2 << "," << gold << "\n";
 
 		return pow(value1, expo * tt2::gold_expos[gold][tt2::FAIRYGOLD]);
+	}
+};
+
+class FairyGoldSecond : Expo {
+public:
+	using Expo::Expo;
+	virtual vtype getDamage(std::size_t const& build, vtype const& value1, vtype const& value2, size_t const& gold) {
+		if (DebugMode) std::cout << "FairyGold::getDamage" << build << "," << value1 << "," << value2 << "," << gold << "\n";
+
+		return pow(value2, expo * tt2::gold_expos[gold][tt2::FAIRYGOLD]);
 	}
 };
 
@@ -244,7 +254,6 @@ public:
 		sc_aps = (tt2::sc_base_aps + value2) * tt2::ancient_warrior;
 		const vtype skill_efficiency = tt2::spawn_time / (ceil(tt2::spawn_time * sc_aps) / sc_aps);
 		vtype efficiency = pow(skill_efficiency / base_efficiency, 43.6);
-		if (tt2::dmg_expos[build][tt2::SCDAMAGE] == 0) efficiency = 1;
 		return pow(value1 * efficiency, tt2::dmg_expos[build][tt2::SCDAMAGE] ) ;
 	}
 };
@@ -260,7 +269,7 @@ public:
 			hp *= 1 - value1 * efficiency;
 			efficiency *= value2;
 		}
-		return (.5 / hp) + .5;
+		return (.5L / hp) + .5L;
 	}
 };
 
@@ -314,6 +323,6 @@ public:
 	}
 };
 typedef Expression<vtype, TapDMG, TapDmgFromHelpers, AllHeroDMG, AllDMG, PetDMG, PetTapCountToAttack, BossGold, pHoMGold, PHoMCooldown, MaxCritDamageAndCritChance, FireSwordDamage,
-	ChestersonGoldAndChance, WarCryDamage, ClanShipDamage, TIMultiplicative, SearingLight, AnchoringShot, MidasGold, FairyGold, HSDMG, PhantomVengeance,
+	ChestersonGoldAndChance, WarCryDamage, ClanShipDamage, TIMultiplicative, SearingLight, AnchoringShot, MidasGold, FairyGold, FairyGoldSecond, HSDMG, PhantomVengeance,
 	LightningStrike, DimensionalShift, MasterThief, DSDamage, TwilightVeil, GhostShip, ShadowAssassin> Zero;
 //todo ALLPROBABILITIES 
