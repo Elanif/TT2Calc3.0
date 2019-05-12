@@ -21,6 +21,7 @@ ctype SkillContainer::gettingTo(std::vector<SkillContainer> const& _skillcont) c
 	ctype result = 0;
 	for (const auto& i : skill.get().GettingToArray)
 		result += _skillcont[i->index].getCurrentCost();
+	if (result > skill.get().SPReq) result = skill.get().SPReq; //last update
 	return result;
 }
 

@@ -61,7 +61,7 @@ int main()
 	SkillPowers.push_back(Zero()+ShadowAssassin());
 	std::cout << SkillPowers.size()<< "skills\n";
 
-	constexpr tt2::BUILDS build=tt2::HS;
+	constexpr tt2::BUILDS build=tt2::SC;
 	constexpr tt2::GOLDTYPES gold=tt2::PHOMGOLD;
 
 	std::string output_name = Preprocessor::getStringBuildAndInit(build, gold);

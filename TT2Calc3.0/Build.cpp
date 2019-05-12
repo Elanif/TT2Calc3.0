@@ -39,7 +39,7 @@ bool Build::unlocked(std::size_t const& skill_index) const
 	return d[skill_index].unlocked(d);
 }
 
-ctype Build::gettingTo(std::size_t const& skill_index) const
+ctype Build::gettingTo(std::size_t const& skill_index) const //limit amount
 {
 	return d[skill_index].gettingTo(d);
 }
