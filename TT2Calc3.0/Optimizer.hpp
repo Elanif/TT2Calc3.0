@@ -11,6 +11,7 @@ template<class T>
 class tiercontainer {
 public:
 	void order(std::size_t const& tiers, std::size_t const& skillnumber);
+	void order(const std::size_t& tiers, std::size_t const& skillnumber, std::vector<std::tuple<std::size_t, std::size_t > > const& min_max_level);
 
 	tiercontainer(std::size_t const& _tiers);
 	tiercontainer(std::size_t const& _tiers, T const& root);
@@ -78,12 +79,6 @@ tiercontainer<T>::~tiercontainer() {
 	delete[] _temptierlist;
 };
 //END CONSTRUCTORS
-/*
-template<class T>
-void tierordering(const size_t& tiers, const size_t T::* _lvlprogression(const size_t&, const size_t&));
-
-template<class T>
-void tierordering(const size_t& tiers, const T& firstchild, const size_t& skillnumber, const size_t(T::* lvlprogression)(const size_t&, const size_t&), size_t(T::* _build)(const size_t&, const size_t&));*/
 
 template<class T>
 void tiercontainer<T>::order(const std::size_t& tiers, std::size_t const& skillnumber)
@@ -98,8 +93,8 @@ void tiercontainer<T>::order(const std::size_t& tiers, std::size_t const& skilln
 	std::vector<bool> levelup(skillnumber, false);
 	std::vector<bool> tiercost(skillnumber, false);
 
-	for (std::size_t skill_it = 0; skill_it < skillnumber-1; ++skill_it) { // do it for skillnumber-1 and in the last iteration use value_lessequal since unlocking doesnt matter
-		std::cout << "Skill number " << skill_it <<"\n";
+	for (std::size_t skill_it = 0; skill_it < skillnumber - 1; ++skill_it) { // do it for skillnumber-1 and in the last iteration use value_lessequal since unlocking doesnt matter
+		std::cout << "Skill number " << skill_it << "\n";
 		if (DebugMode) {
 			std::size_t item_count = 0;
 			for (size_t cycle = 0; cycle < tiers; ++cycle) item_count += tierlist[cycle].size();
@@ -108,14 +103,12 @@ void tiercontainer<T>::order(const std::size_t& tiers, std::size_t const& skilln
 		for (size_t cycle = 0; cycle < tiers; ++cycle) while (!empty(cycle)) {
 			T cycle_root = extract_front(cycle);
 			T modified_root = cycle_root;
-			if (skill_it != 24)
 			{
 				modified_root.levelUp(skill_it, 0);
 				insert(modified_root.getCost(), modified_root);
 			}
 			if (cycle_root.unlocked(skill_it)) for (std::size_t skill_level_it = 1;; ++skill_level_it) {
-				if (skill_it == 24 && skill_level_it == 1) skill_level_it = 13;
-				if (skill_it == 16||skill_it==17) break;
+
 				if (DebugMode)unlocked[skill_it] = true;
 				modified_root = cycle_root;
 
@@ -141,10 +134,10 @@ void tiercontainer<T>::order(const std::size_t& tiers, std::size_t const& skilln
 		for (size_t cycle = 0; cycle < tiers; ++cycle) while (!empty(cycle)) {
 			T cycle_root = extract_front(cycle);
 			T modified_root = cycle_root;
-			/*{
+			{
 				modified_root.levelUp(last_skill, 0);
 				add(modified_root.getCost(), modified_root);
-			}*/
+			}
 			if (cycle_root.unlocked(last_skill)) for (std::size_t skill_level_it = 1;; ++skill_level_it) {
 				if (DebugMode)unlocked[last_skill] = true;
 				modified_root = cycle_root;
@@ -160,13 +153,82 @@ void tiercontainer<T>::order(const std::size_t& tiers, std::size_t const& skilln
 		}
 		swap();
 	}
+}
 
+template<class T>
+void tiercontainer<T>::order(const std::size_t& tiers, std::size_t const& skillnumber, std::vector<std::tuple<std::size_t, std::size_t > > const& min_max_level)
+{
+	if (tierlist) delete[] tierlist;
+	if (_temptierlist) delete[] _temptierlist;
+	tierlist = new std::list<T>[tiers + 1];
+	_temptierlist = new std::list<T>[tiers + 1];
+	tierlist[0].push_front(root);
 
+	std::vector<bool> unlocked(skillnumber, false);
+	std::vector<bool> levelup(skillnumber, false);
+	std::vector<bool> tiercost(skillnumber, false);
 
-	if (DebugMode) for (std::size_t i = 0; i < skillnumber; ++i) {
-		std::cout << i<<":"<<unlocked[i] << "," << levelup[i] << ","<< tiercost[i] << "\n";
+	for (std::size_t skill_it = 0; skill_it < skillnumber - 1; ++skill_it) { // do it for skillnumber-1 and in the last iteration use value_lessequal since unlocking doesnt matter
+		std::cout << "Skill number " << skill_it << "\n";
+		if (DebugMode) {
+			std::size_t item_count = 0;
+			for (size_t cycle = 0; cycle < tiers; ++cycle) item_count += tierlist[cycle].size();
+			std::cout << "Total list size " << item_count << "\n";
+		}
+		for (size_t cycle = 0; cycle < tiers; ++cycle) while (!empty(cycle)) {
+			T cycle_root = extract_front(cycle);
+			T modified_root = cycle_root;
+			if (std::get<0>(min_max_level[skill_it])<=0)
+			{
+				modified_root.levelUp(skill_it, 0);
+				insert(modified_root.getCost(), modified_root);
+			}
+			if (cycle_root.unlocked(skill_it)) for (std::size_t skill_level_it = std::get<0>(min_max_level[skill_it]);skill_level_it<=std::get<1>(min_max_level[skill_it]); ++skill_level_it) {
+
+				if (DebugMode)unlocked[skill_it] = true;
+				modified_root = cycle_root;
+
+				if (!modified_root.levelUp(skill_it, skill_level_it)) break;
+				if (DebugMode)levelup[skill_it] = true;
+				std::size_t tier_cost = modified_root.getCost(); // always call this after levelUp
+
+				if (tier_cost > tiers) break;
+				if (DebugMode)tiercost[skill_it] = true;
+				insert(tier_cost, modified_root);
+			}
+		}
+		swap();
 	}
-	if (DebugMode) std::cin.get();
+	{
+		std::size_t last_skill = skillnumber - 1;
+		std::cout << "Skill number " << last_skill << "\n";
+		if (DebugMode) {
+			std::size_t item_count = 0;
+			for (size_t cycle = 0; cycle < tiers; ++cycle) item_count += tierlist[cycle].size();
+			std::cout << "Total list size " << item_count << "\n";
+		}
+		for (size_t cycle = 0; cycle < tiers; ++cycle) while (!empty(cycle)) {
+			T cycle_root = extract_front(cycle);
+			T modified_root = cycle_root;
+			{
+				modified_root.levelUp(last_skill, 0);
+				add(modified_root.getCost(), modified_root);
+			}
+			if (cycle_root.unlocked(last_skill)) for (std::size_t skill_level_it = 1;; ++skill_level_it) {
+				if (DebugMode)unlocked[last_skill] = true;
+				modified_root = cycle_root;
+
+				if (!modified_root.levelUp(last_skill, skill_level_it)) break;
+				if (DebugMode)levelup[last_skill] = true;
+				std::size_t tier_cost = modified_root.getCost(); //always call this after levelUp
+
+				if (tier_cost > tiers) break;
+				if (DebugMode)tiercost[last_skill] = true;
+				add(tier_cost, modified_root);
+			}
+		}
+		swap();
+	}
 }
 
 template<class T>

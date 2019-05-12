@@ -1,6 +1,79 @@
 #include "Preprocessor.hpp"
 #include"BuildImplementations.hpp"
 
+std::string Preprocessor::getStringBuildAndInit(tt2::BUILDS build, tt2::GOLDTYPES gold)
+{
+	std::string output_name = "";
+	switch (build) {
+	case tt2::SC:
+		tt2::fight_duration = 4;
+		output_name += "SC ";
+		break;
+	case tt2::HS:
+		output_name += "HS ";
+		tt2::fight_duration = 34./12.*4.;
+		break;
+	case tt2::Pet:
+		output_name += "Pet ";
+		tt2::fight_duration = 4;
+		break;
+	case tt2::CS:
+		output_name += "CS ";
+		tt2::fight_duration = 4;
+		break;
+	}
+
+	switch (gold) {
+	case tt2::PHOMGOLD:
+		output_name += "pHoM";
+		break;
+	case tt2::FAIRYGOLD:
+		output_name += "Fairy";
+		break;
+	}
+
+	output_name += ".txt";
+	return output_name;
+}
+
+std::vector<std::tuple<std::size_t, std::size_t > > Preprocessor::init(tt2::BUILDS build, tt2::GOLDTYPES gold)
+{
+	std::vector<std::tuple<std::size_t, std::size_t > >min_max_level(35, std::make_tuple(0, 26));
+	switch (build) {
+	case tt2::SC:
+		tt2::fight_duration = 4;
+		min_max_level[16]={ 0,0 };
+		min_max_level[24]={ 13,25 };
+		min_max_level[27]={ 1,25 };
+		min_max_level[31] = { 1,25 };
+		min_max_level[34] = { 1,25 };
+		break;
+	case tt2::HS:
+		tt2::fight_duration = 34. / 12. * 4.;
+		min_max_level[16] = { 0,0 };
+		min_max_level[20] = { 24,25 };
+		min_max_level[31] = { 1,25 };
+		min_max_level[34] = { 1,25 };
+		min_max_level[27] = { 1,25 };
+		break;
+	case tt2::Pet:
+		tt2::fight_duration = 4;
+		break;
+	case tt2::CS:
+		tt2::fight_duration = 4;
+		break;
+	}
+
+	switch (gold) {
+	case tt2::PHOMGOLD:
+		min_max_level[3] = { 1,25 };
+		break;
+	case tt2::FAIRYGOLD:
+		break;
+	}
+	return min_max_level;
+}
+
 void Preprocessor::preprocess(std::size_t const& build, std::size_t const& gold, std::vector<Zero>& SkillPowers)
 {
 	for (std::size_t skill_iter = 0; skill_iter < tt2::skills.size(); ++skill_iter) {

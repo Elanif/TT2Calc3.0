@@ -61,13 +61,17 @@ int main()
 	SkillPowers.push_back(Zero()+ShadowAssassin());
 	std::cout << SkillPowers.size()<< "skills\n";
 
-	constexpr std::size_t build=tt2::HS;
-	constexpr std::size_t gold=tt2::PHOMGOLD;
+	constexpr tt2::BUILDS build=tt2::HS;
+	constexpr tt2::GOLDTYPES gold=tt2::PHOMGOLD;
+
+	std::string output_name = Preprocessor::getStringBuildAndInit(build, gold);
+
+	std::vector<std::tuple<std::size_t, std::size_t > >min_max_level=Preprocessor::init(build, gold);
 
 	Preprocessor::preprocess(build, gold, SkillPowers);
 	std::vector<SkillContainer>starting_container = Preprocessor::getSkillContainer();
 
-	Build bad_build(starting_container);
+	/*Build bad_build(starting_container);
 	std::vector<std::size_t> build1{ 2, 1, 0, 15, 18 ,0 ,0 ,5 ,0 ,2 ,1 ,7 ,1 ,14 ,20 ,2 ,6 ,14 ,2 ,4 ,0 ,18 ,0 ,0 ,1 ,0 ,0 ,12 ,12 ,8 ,0 ,0 ,0 ,0 ,0 };
 	for (std::size_t i = 0; i < build1.size(); ++i) bad_build.d[i].level = build1[i];
 	bad_build.last_leveled_skill = build1.size() - 1;
@@ -75,7 +79,7 @@ int main()
 	for (const auto& i : Skill::branch_range) {
 		std::cout << "{"<<std::get<0>(i) << "," << std::get<1>(i) << "} ";
 	}
-	std::cout << "\n";
+	std::cout << "\n";*/
 	Skill::branch_range[0] = std::make_tuple(0, 9);
 	Skill::branch_range[1] = std::make_tuple(9, 18);
 	Skill::branch_range[2] = std::make_tuple(18, 28);
@@ -87,38 +91,15 @@ int main()
 	constexpr std::size_t max_skillpoints = 1500;
 
 	tiercontainer <Build> tier_orderer(max_skillpoints, first_child);
-	tier_orderer.order(max_skillpoints, tt2::skills.size());
+	tier_orderer.order(max_skillpoints, tt2::skills.size(),min_max_level);
 
-	std::string output_name = "";
-	switch (build) {
-	case tt2::SC:
-		output_name += "SC ";
-		break;
-	case tt2::HS:
-		output_name += "HS";
-		break;
-	case tt2::Pet:
-		output_name += "Pet ";
-		break;
-	case tt2::CS:
-		output_name += "CS ";
-		break;
-	}
-
-	switch (gold) {
-	case tt2::PHOMGOLD:
-		output_name += "pHoM ";
-		break;
-	}
-
-	output_name += ".txt";
 
 	std::fstream output_text(output_name, std::ios::out);
 
 	std::vector<Build> ordering=tier_orderer.print(Build::value_lessequal);
 	for (const auto& i : ordering)
 		i.print(output_text);
-
+	output_text.close();
 }
 
 //TODO in buildimplementations: add way to make a skill add 0 damage: example lightning burst which is useless for pushing
