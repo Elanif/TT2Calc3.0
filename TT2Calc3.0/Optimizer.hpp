@@ -12,6 +12,7 @@ class tiercontainer {
 public:
 	void order(std::size_t const& tiers, std::size_t const& skillnumber);
 	void order(const std::size_t& tiers, std::size_t const& skillnumber, std::vector<std::tuple<std::size_t, std::size_t > > const& min_max_level);
+	void eatCycle(const std::size_t& tiers, std::size_t const& skillnumber, std::vector<std::tuple<std::size_t, std::size_t > > const& min_max_level, std::size_t const& skill_it, const bool& add_instead_of_insert = false);
 
 	tiercontainer(std::size_t const& _tiers);
 	tiercontainer(std::size_t const& _tiers, T const& root);
@@ -83,80 +84,37 @@ tiercontainer<T>::~tiercontainer() {
 template<class T>
 void tiercontainer<T>::order(const std::size_t& tiers, std::size_t const& skillnumber)
 {
-	if (tierlist) delete[] tierlist;
-	if (_temptierlist) delete[] _temptierlist;
-	tierlist = new std::list<T>[tiers + 1];
-	_temptierlist = new std::list<T>[tiers + 1];
-	tierlist[0].push_front(root);
-
-	std::vector<bool> unlocked(skillnumber, false);
-	std::vector<bool> levelup(skillnumber, false);
-	std::vector<bool> tiercost(skillnumber, false);
-
-	for (std::size_t skill_it = 0; skill_it < skillnumber - 1; ++skill_it) { // do it for skillnumber-1 and in the last iteration use value_lessequal since unlocking doesnt matter
-		std::cout << "Skill number " << skill_it << "\n";
-		if (DebugMode) {
-			std::size_t item_count = 0;
-			for (size_t cycle = 0; cycle < tiers; ++cycle) item_count += tierlist[cycle].size();
-			std::cout << "Total list size " << item_count << "\n";
-		}
-		for (size_t cycle = 0; cycle < tiers; ++cycle) while (!empty(cycle)) {
-			T cycle_root = extract_front(cycle);
-			T modified_root = cycle_root;
-			{
-				modified_root.levelUp(skill_it, 0);
-				insert(modified_root.getCost(), modified_root);
-			}
-			if (cycle_root.unlocked(skill_it)) for (std::size_t skill_level_it = 1;; ++skill_level_it) {
-
-				if (DebugMode)unlocked[skill_it] = true;
-				modified_root = cycle_root;
-
-				if (!modified_root.levelUp(skill_it, skill_level_it)) break;
-				if (DebugMode)levelup[skill_it] = true;
-				std::size_t tier_cost = modified_root.getCost(); // always call this after levelUp
-
-				if (tier_cost > tiers) break;
-				if (DebugMode)tiercost[skill_it] = true;
-				insert(tier_cost, modified_root);
-			}
-		}
-		swap();
-	}
-	{
-		std::size_t last_skill = skillnumber - 1;
-		std::cout << "Skill number " << last_skill << "\n";
-		if (DebugMode) {
-			std::size_t item_count = 0;
-			for (size_t cycle = 0; cycle < tiers; ++cycle) item_count += tierlist[cycle].size();
-			std::cout << "Total list size " << item_count << "\n";
-		}
-		for (size_t cycle = 0; cycle < tiers; ++cycle) while (!empty(cycle)) {
-			T cycle_root = extract_front(cycle);
-			T modified_root = cycle_root;
-			{
-				modified_root.levelUp(last_skill, 0);
-				add(modified_root.getCost(), modified_root);
-			}
-			if (cycle_root.unlocked(last_skill)) for (std::size_t skill_level_it = 1;; ++skill_level_it) {
-				if (DebugMode)unlocked[last_skill] = true;
-				modified_root = cycle_root;
-
-				if (!modified_root.levelUp(last_skill, skill_level_it)) break;
-				if (DebugMode)levelup[last_skill] = true;
-				std::size_t tier_cost = modified_root.getCost(); //always call this after levelUp
-
-				if (tier_cost > tiers) break;
-				if (DebugMode)tiercost[last_skill] = true;
-				add(tier_cost, modified_root);
-			}
-		}
-		swap();
-	}
+	std::vector<std::tuple<std::size_t, std::size_t > > default_min_max(25, { 0,25 });
+	order(tiers, skillnumber, default_min_max);
 }
 
 template<class T>
-void tiercontainer<T>::order(const std::size_t& tiers, std::size_t const& skillnumber, std::vector<std::tuple<std::size_t, std::size_t > > const& min_max_level)
+void tiercontainer<T>::eatCycle(const std::size_t & tiers, std::size_t const& skillnumber, std::vector<std::tuple<std::size_t, std::size_t > > const& min_max_level, std::size_t const& skill_it, bool const& add_instead_of_insert) {
+	for (size_t cycle = 0; cycle < tiers; ++cycle) while (!empty(cycle)) {
+		T cycle_root = extract_front(cycle);
+		T modified_root = cycle_root;
+		if (std::get<0>(min_max_level[skill_it]) <= 0)
+		{
+			modified_root.levelUp(skill_it, 0);
+
+			if (add_instead_of_insert) add(modified_root.getCost(), modified_root);
+			else insert(modified_root.getCost(), modified_root);
+		}
+		if (cycle_root.unlocked(skill_it)) for (std::size_t skill_level_it = std::get<0>(min_max_level[skill_it]); skill_level_it <= std::get<1>(min_max_level[skill_it]); ++skill_level_it) {
+
+			modified_root = cycle_root;
+
+			if (!modified_root.levelUp(skill_it, skill_level_it)) break;
+			std::size_t tier_cost = modified_root.getCost(); // always call this after levelUp
+
+			if (tier_cost > tiers) break;
+			if (add_instead_of_insert) add(modified_root.getCost(), modified_root);
+			else insert(modified_root.getCost(), modified_root);
+		}
+	}
+}
+template<class T>
+void tiercontainer<T>::order(const std::size_t & tiers, std::size_t const& skillnumber, std::vector<std::tuple<std::size_t, std::size_t > > const& min_max_level)
 {
 	if (tierlist) delete[] tierlist;
 	if (_temptierlist) delete[] _temptierlist;
@@ -166,54 +124,19 @@ void tiercontainer<T>::order(const std::size_t& tiers, std::size_t const& skilln
 
 	for (std::size_t skill_it = 0; skill_it < skillnumber - 1; ++skill_it) { // do it for skillnumber-1 and in the last iteration use value_lessequal since unlocking doesnt matter
 		std::cout << "Skill number " << skill_it << "\n";
-		for (size_t cycle = 0; cycle < tiers; ++cycle) while (!empty(cycle)) {
-			T cycle_root = extract_front(cycle);
-			T modified_root = cycle_root;
-			if (std::get<0>(min_max_level[skill_it])<=0)
-			{
-				modified_root.levelUp(skill_it, 0);
-				insert(modified_root.getCost(), modified_root);
-			}
-			if (cycle_root.unlocked(skill_it)) for (std::size_t skill_level_it = std::get<0>(min_max_level[skill_it]);skill_level_it<=std::get<1>(min_max_level[skill_it]); ++skill_level_it) {
-
-				modified_root = cycle_root;
-
-				if (!modified_root.levelUp(skill_it, skill_level_it)) break;
-				std::size_t tier_cost = modified_root.getCost(); // always call this after levelUp
-
-				if (tier_cost > tiers) break;
-				insert(tier_cost, modified_root);
-			}
-		}
+		eatCycle(tiers, skillnumber, min_max_level, skill_it);
 		swap();
 	}
 	{
 		std::size_t last_skill = skillnumber - 1;
 		std::cout << "Skill number " << last_skill << "\n";
-		for (size_t cycle = 0; cycle < tiers; ++cycle) while (!empty(cycle)) {
-			T cycle_root = extract_front(cycle);
-			T modified_root = cycle_root;
-			if (std::get<0>(min_max_level[last_skill]) <= 0)
-			{
-				modified_root.levelUp(last_skill, 0);
-				add(modified_root.getCost(), modified_root);
-			}
-			if (cycle_root.unlocked(last_skill)) for (std::size_t skill_level_it = std::get<0>(min_max_level[last_skill]); skill_level_it <= std::get<1>(min_max_level[last_skill]); ++skill_level_it) {
-				modified_root = cycle_root;
-
-				if (!modified_root.levelUp(last_skill, skill_level_it)) break;
-				std::size_t tier_cost = modified_root.getCost(); //always call this after levelUp
-
-				if (tier_cost > tiers) break;
-				add(tier_cost, modified_root);
-			}
-		}
+		eatCycle(tiers, skillnumber, min_max_level, last_skill, true);
 		swap();
 	}
 }
 
 template<class T>
-void tiercontainer<T>::add(const std::size_t& _tier, const T& pushedobj) {
+void tiercontainer<T>::add(const std::size_t & _tier, const T & pushedobj) {
 	/*std::cout << "adding ";
 	pushedobj.print(std::cout);*/
 	_temptierlist[_tier].push_back(pushedobj);
@@ -228,14 +151,14 @@ void tiercontainer<T>::swap() {
 
 
 template<class T>
-T tiercontainer<T>::extract_front(const std::size_t& _tier) {
+T tiercontainer<T>::extract_front(const std::size_t & _tier) {
 	T _temp = tierlist[_tier].front();
 	tierlist[_tier].pop_front();
 	return _temp;
 }
 
 template<class T>
-bool tiercontainer<T>::insert(const std::size_t& _tier, const T& candidate) {
+bool tiercontainer<T>::insert(const std::size_t & _tier, const T & candidate) {
 
 	for (typename std::list<T>::iterator it = _temptierlist[_tier].begin(); it != _temptierlist[_tier].end(); ) {
 		if ((*it) <= candidate) {
@@ -253,12 +176,12 @@ bool tiercontainer<T>::insert(const std::size_t& _tier, const T& candidate) {
 }
 
 template<class T>
-bool tiercontainer<T>::empty(const std::size_t& _tier) {
+bool tiercontainer<T>::empty(const std::size_t & _tier) {
 	return tierlist[_tier].empty();
 }
 
 template<class T>
-std::vector<T> tiercontainer<T>::print(bool _lessequal(const T& a, const T& b)) {
+std::vector<T> tiercontainer<T>::print(bool _lessequal(const T & a, const T & b)) {
 	std::vector<T> maxdamage(tiers, root);
 	for (int k = 1; k < tiers; ++k) {
 		if (tierlist[k].size() > 0) {
@@ -270,50 +193,3 @@ std::vector<T> tiercontainer<T>::print(bool _lessequal(const T& a, const T& b)) 
 	}
 	return maxdamage;
 }
-//
-//template<class T>
-//void tierordering(const std::size_t & tiers, const std::size_t T:: * _lvlprogression(const std::size_t&, const std::size_t&)) {
-//	tierordering<T>(tiers, _lvlprogression);
-//}
-//
-//template<class T>
-//void tierordering(const std::size_t & tiers, const T & firstchild, const std::size_t & skillnumber, const std::size_t(T:: * lvlprogression)(const std::size_t&, const std::size_t&), std::size_t(T:: * _build)(const std::size_t&, const std::size_t&)) {
-//	std::function <std::size_t(const std::size_t&, const std::size_t&) > build;
-//	tiercontainer<T> tcontainer(tiers, firstchild);
-//	for (size_t i = 0; i < skillnumber; ++i) {
-//		for (size_t cycle = 0; cycle < tiers; ++cycle) while (!tcontainer.empty(cycle)) {
-//			T d = tcontainer.extract_front();
-//			build = std::bind(_build, d);
-//			for (size_t j = 0; lvlprogression(i, j) >= 0; ++j) {
-//				size_t nextstep = d.build(i, d.lvlprogression(i, j));
-//				if (nextstep < tiers) {
-//					tcontainer.instert(nextstep, d);
-//				}
-//				else break;
-//			}
-//		}
-//		tcontainer.swap();
-//	}
-//	return tcontainer; //? copy constructor/ copy elision
-//}
-//
-//template<class T>
-//void tierordering(const std::size_t & tiers, const std::size_t & skillnumber, const std::size_t(T:: * lvlprogression)(const std::size_t&, const std::size_t&), std::size_t(T:: * _build)(const std::size_t&, const std::size_t&)) {
-//	std::function <std::size_t(const std::size_t&, const std::size_t&) > build;
-//	tiercontainer<T> tcontainer(tiers, T());
-//	for (size_t i = 0; i < skillnumber; ++i) {
-//		for (size_t cycle = 0; cycle < tiers; ++cycle) while (!tcontainer.empty(cycle)) {
-//			T d = tcontainer.extract_front();
-//			build = std::bind(_build, d);
-//			for (size_t j = 0; lvlprogression(i, j) >= 0; ++j) {
-//				size_t nextstep = d.build(i, d.lvlprogression(i, j));
-//				if (nextstep < tiers) {
-//					tcontainer.instert(nextstep, d);
-//				}
-//				else break;
-//			}
-//		}
-//		tcontainer.swap();
-//	}
-//	return tcontainer; //? copy constructor/ copy elision
-//}
