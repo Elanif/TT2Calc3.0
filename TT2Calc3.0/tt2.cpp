@@ -347,7 +347,7 @@ void tt2::initExpos() {
 	dmg_expos[tt2::Pet][tt2::CSDAMAGE] = 0;
 	dmg_expos[tt2::Pet][tt2::HSDAMAGE] = 0;
 	dmg_expos[tt2::Pet][tt2::SCDAMAGE] = 0;
-	dmg_expos[tt2::Pet][tt2::DSDAMAGE] = 0.5;
+	dmg_expos[tt2::Pet][tt2::DSDAMAGE] = 0.7;
 }
 
 void tt2::initGoldExpos()
