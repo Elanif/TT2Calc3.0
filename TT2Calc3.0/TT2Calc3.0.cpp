@@ -85,8 +85,9 @@ int main()
 	std::size_t thread_number = std::thread::hardware_concurrency() / 2 > 0 ? std::thread::hardware_concurrency() / 2:1;
 	tier_orderer.order(max_skillpoints, tt2::skills.size(),min_max_level, thread_number);
 
+	std::cout << output_name;
 	if (output_name.length() == 0) return 1;
-	std::fstream output_text(output_name, std::ios::trunc);
+	std::fstream output_text(output_name, std::ios::out);
 
 	std::vector<Build> ordering=tier_orderer.print(Build::value_lessequal);
 	for (const auto& i : ordering)
