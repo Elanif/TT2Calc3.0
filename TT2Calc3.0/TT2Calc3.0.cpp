@@ -6,6 +6,7 @@
 #include<fstream>
 #include"Optimizer.hpp"
 #include "TT2Calc3.0.h"
+#include<thread>
 
 int main()
 {
@@ -59,7 +60,6 @@ int main()
 	SkillPowers.push_back(Zero()+TwilightVeil());
 	SkillPowers.push_back(Zero()+GhostShip());
 	SkillPowers.push_back(Zero()+ShadowAssassin());
-	std::cout << SkillPowers.size()<< "skills\n";
 
 	constexpr tt2::BUILDS build = tt2::HS;
 	constexpr tt2::GOLDTYPES gold=tt2::PHOMGOLD;
@@ -71,15 +71,6 @@ int main()
 	Preprocessor::preprocess(build, gold, SkillPowers);
 	std::vector<SkillContainer>starting_container = Preprocessor::getSkillContainer();
 
-	/*Build bad_build(starting_container);
-	std::vector<std::size_t> build1{ 2, 1, 0, 15, 18 ,0 ,0 ,5 ,0 ,2 ,1 ,7 ,1 ,14 ,20 ,2 ,6 ,14 ,2 ,4 ,0 ,18 ,0 ,0 ,1 ,0 ,0 ,12 ,12 ,8 ,0 ,0 ,0 ,0 ,0 };
-	for (std::size_t i = 0; i < build1.size(); ++i) bad_build.d[i].level = build1[i];
-	bad_build.last_leveled_skill = build1.size() - 1;
-
-	for (const auto& i : Skill::branch_range) {
-		std::cout << "{"<<std::get<0>(i) << "," << std::get<1>(i) << "} ";
-	}
-	std::cout << "\n";*/
 	Skill::branch_range[0] = std::make_tuple(0, 9);
 	Skill::branch_range[1] = std::make_tuple(9, 18);
 	Skill::branch_range[2] = std::make_tuple(18, 28);
@@ -91,10 +82,11 @@ int main()
 	constexpr std::size_t max_skillpoints = 1500;
 
 	tiercontainer <Build> tier_orderer(max_skillpoints, first_child);
-	tier_orderer.order(max_skillpoints, tt2::skills.size(),min_max_level);
+	std::size_t thread_number = std::thread::hardware_concurrency() / 2 > 0 ? std::thread::hardware_concurrency() / 2:1;
+	tier_orderer.order(max_skillpoints, tt2::skills.size(),min_max_level, thread_number);
 
-
-	std::fstream output_text(output_name, std::ios::out);
+	if (output_name.length() == 0) return 1;
+	std::fstream output_text(output_name, std::ios::trunc);
 
 	std::vector<Build> ordering=tier_orderer.print(Build::value_lessequal);
 	for (const auto& i : ordering)
