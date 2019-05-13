@@ -57,6 +57,9 @@ std::vector<std::tuple<std::size_t, std::size_t > > Preprocessor::init(tt2::BUIL
 		min_max_level[27] = { 1,25 };
 		break;
 	case tt2::Pet:
+		min_max_level[6] = { 0,1 };
+		min_max_level[32] = { 1,25 };
+		min_max_level[29] = { 1,25 };
 		tt2::fight_duration = 4;
 		break;
 	case tt2::CS:

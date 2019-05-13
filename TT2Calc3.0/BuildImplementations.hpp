@@ -79,9 +79,19 @@ class PetDMG : Expo {
 public:
 	using Expo::Expo;
 	virtual vtype getDamage(std::size_t const& build, vtype const& value1, vtype const& value2, size_t const& gold) {
-		if (DebugMode) std::cout << "PetDMG::getDamage"<<build<<","<<value1<<","<<value2<<","<<gold<<"\n";
+		if (DebugMode) std::cout << "PetDMG::getDamage" << build << "," << value1 << "," << value2 << "," << gold << "\n";
 
 		return pow(value1, expo * tt2::dmg_expos[build][tt2::PETDAMAGE]);
+	}
+};
+
+class SCDMG : Expo {
+public:
+	using Expo::Expo;
+	virtual vtype getDamage(std::size_t const& build, vtype const& value1, vtype const& value2, size_t const& gold) {
+		if (DebugMode) std::cout << "PetDMG::getDamage" << build << "," << value1 << "," << value2 << "," << gold << "\n";
+
+		return pow(value1, expo * tt2::dmg_expos[build][tt2::SCDAMAGE]);
 	}
 };
 
@@ -321,7 +331,7 @@ public:
 		return pow(value2, tt2::dmg_expos[build][tt2::SCDAMAGE]);
 	}
 };
-typedef Expression<vtype, TapDMG, TapDmgFromHelpers, AllHeroDMG, AllDMG, PetDMG, PetTapCountToAttack, BossGold, pHoMGold, PHoMCooldown, MaxCritDamageAndCritChance, FireSwordDamage,
+typedef Expression<vtype, TapDMG, TapDmgFromHelpers, AllHeroDMG, AllDMG, SCDMG, PetDMG, PetTapCountToAttack, BossGold, pHoMGold, PHoMCooldown, MaxCritDamageAndCritChance, FireSwordDamage,
 	ChestersonGoldAndChance, WarCryDamage, ClanShipDamage, TIMultiplicative, SearingLight, AnchoringShot, MidasGold, FairyGold, FairyGoldSecond, HSDMG, PhantomVengeance,
 	LightningStrike, DimensionalShift, MasterThief, DSDamage, TwilightVeil, GhostShip, ShadowAssassin> Zero;
 //todo ALLPROBABILITIES 

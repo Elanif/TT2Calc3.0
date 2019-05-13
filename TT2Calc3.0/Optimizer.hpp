@@ -164,17 +164,8 @@ void tiercontainer<T>::order(const std::size_t& tiers, std::size_t const& skilln
 	_temptierlist = new std::list<T>[tiers + 1];
 	tierlist[0].push_front(root);
 
-	std::vector<bool> unlocked(skillnumber, false);
-	std::vector<bool> levelup(skillnumber, false);
-	std::vector<bool> tiercost(skillnumber, false);
-
 	for (std::size_t skill_it = 0; skill_it < skillnumber - 1; ++skill_it) { // do it for skillnumber-1 and in the last iteration use value_lessequal since unlocking doesnt matter
 		std::cout << "Skill number " << skill_it << "\n";
-		if (DebugMode) {
-			std::size_t item_count = 0;
-			for (size_t cycle = 0; cycle < tiers; ++cycle) item_count += tierlist[cycle].size();
-			std::cout << "Total list size " << item_count << "\n";
-		}
 		for (size_t cycle = 0; cycle < tiers; ++cycle) while (!empty(cycle)) {
 			T cycle_root = extract_front(cycle);
 			T modified_root = cycle_root;
@@ -185,15 +176,12 @@ void tiercontainer<T>::order(const std::size_t& tiers, std::size_t const& skilln
 			}
 			if (cycle_root.unlocked(skill_it)) for (std::size_t skill_level_it = std::get<0>(min_max_level[skill_it]);skill_level_it<=std::get<1>(min_max_level[skill_it]); ++skill_level_it) {
 
-				if (DebugMode)unlocked[skill_it] = true;
 				modified_root = cycle_root;
 
 				if (!modified_root.levelUp(skill_it, skill_level_it)) break;
-				if (DebugMode)levelup[skill_it] = true;
 				std::size_t tier_cost = modified_root.getCost(); // always call this after levelUp
 
 				if (tier_cost > tiers) break;
-				if (DebugMode)tiercost[skill_it] = true;
 				insert(tier_cost, modified_root);
 			}
 		}
@@ -202,28 +190,21 @@ void tiercontainer<T>::order(const std::size_t& tiers, std::size_t const& skilln
 	{
 		std::size_t last_skill = skillnumber - 1;
 		std::cout << "Skill number " << last_skill << "\n";
-		if (DebugMode) {
-			std::size_t item_count = 0;
-			for (size_t cycle = 0; cycle < tiers; ++cycle) item_count += tierlist[cycle].size();
-			std::cout << "Total list size " << item_count << "\n";
-		}
 		for (size_t cycle = 0; cycle < tiers; ++cycle) while (!empty(cycle)) {
 			T cycle_root = extract_front(cycle);
 			T modified_root = cycle_root;
+			if (std::get<0>(min_max_level[last_skill]) <= 0)
 			{
 				modified_root.levelUp(last_skill, 0);
 				add(modified_root.getCost(), modified_root);
 			}
-			if (cycle_root.unlocked(last_skill)) for (std::size_t skill_level_it = 1;; ++skill_level_it) {
-				if (DebugMode)unlocked[last_skill] = true;
+			if (cycle_root.unlocked(last_skill)) for (std::size_t skill_level_it = std::get<0>(min_max_level[last_skill]); skill_level_it <= std::get<1>(min_max_level[last_skill]); ++skill_level_it) {
 				modified_root = cycle_root;
 
 				if (!modified_root.levelUp(last_skill, skill_level_it)) break;
-				if (DebugMode)levelup[last_skill] = true;
 				std::size_t tier_cost = modified_root.getCost(); //always call this after levelUp
 
 				if (tier_cost > tiers) break;
-				if (DebugMode)tiercost[last_skill] = true;
 				add(tier_cost, modified_root);
 			}
 		}

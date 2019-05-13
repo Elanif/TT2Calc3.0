@@ -50,7 +50,7 @@ int main()
 	SkillPowers.push_back(Zero());
 	SkillPowers.push_back(Zero());
 	SkillPowers.push_back(Zero()+LightningStrike());
-	SkillPowers.push_back(Zero()+DimensionalShift());
+	SkillPowers.push_back(Zero()+HSDMG(1)+DSDamage(1)+MidasGold(1)+FireSwordDamage(1)+WarCryDamage(1)+SCDMG(1));
 
 	SkillPowers.push_back(Zero()+MasterThief());
 	SkillPowers.push_back(Zero()+DSDamage(1));
@@ -61,7 +61,7 @@ int main()
 	SkillPowers.push_back(Zero()+ShadowAssassin());
 	std::cout << SkillPowers.size()<< "skills\n";
 
-	constexpr tt2::BUILDS build=tt2::SC;
+	constexpr tt2::BUILDS build = tt2::HS;
 	constexpr tt2::GOLDTYPES gold=tt2::PHOMGOLD;
 
 	std::string output_name = Preprocessor::getStringBuildAndInit(build, gold);
