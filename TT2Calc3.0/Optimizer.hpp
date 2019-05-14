@@ -169,9 +169,10 @@ void tiercontainer<T>::swap(std::size_t const& _tiers) {
 
 template<class T>
 T tiercontainer<T>::extract_front(const std::size_t & _tier) {
-	T _temp = tierlist[_tier].front();
 	std::unique_lock<std::mutex> pop_mutex(tier_mutex[_tier]);
+	T _temp = tierlist[_tier].front();
 	tierlist[_tier].pop_front();
+	pop_mutex.unlock();
 	return _temp;
 }
 
