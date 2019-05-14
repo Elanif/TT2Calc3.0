@@ -93,29 +93,37 @@ void tiercontainer<T>::order(const std::size_t& tiers, std::size_t const& skilln
 template<class T>
 void tiercontainer<T>::eatCycle(const std::size_t& tiers, std::size_t const& skillnumber, std::vector<std::tuple<std::size_t, std::size_t > > const& min_max_level, 
 	std::size_t const& skill_it, bool const& add_instead_of_insert, std::size_t const& start, std::size_t const& step) {
-	for (size_t cycle = start; cycle < tiers; cycle+=step) while (!empty(cycle)) {
-		T cycle_root = extract_front(cycle);
-		T modified_root = cycle_root;
-		if (std::get<0>(min_max_level[skill_it]) <= 0)
-		{
-			modified_root.levelUp(skill_it, 0);
+	for (size_t cycle = start; cycle < tiers; cycle+=step) {
+		for (;;) {
+			std::unique_lock<std::mutex> empty_mutex(tier_mutex[cycle]);
+			if (!empty(cycle)) {
+				T cycle_root = extract_front(cycle);
+				empty_mutex.unlock();
+				T modified_root = cycle_root;
+				if (std::get<0>(min_max_level[skill_it]) <= 0)
+				{
+					modified_root.levelUp(skill_it, 0);
 
-			if (add_instead_of_insert) add(modified_root.getCost(), modified_root);
-			else insert(modified_root.getCost(), modified_root);
-		}
-		if (cycle_root.unlocked(skill_it)) for (std::size_t skill_level_it = std::get<0>(min_max_level[skill_it]); skill_level_it <= std::get<1>(min_max_level[skill_it]); ++skill_level_it) {
+					if (add_instead_of_insert) add(modified_root.getCost(), modified_root);
+					else insert(modified_root.getCost(), modified_root);
+				}
+				if (cycle_root.unlocked(skill_it)) for (std::size_t skill_level_it = std::get<0>(min_max_level[skill_it]); skill_level_it <= std::get<1>(min_max_level[skill_it]); ++skill_level_it) {
 
-			modified_root = cycle_root;
+					modified_root = cycle_root;
 
-			if (!modified_root.levelUp(skill_it, skill_level_it)) break;
-			std::size_t tier_cost = modified_root.getCost(); // always call this after levelUp
+					if (!modified_root.levelUp(skill_it, skill_level_it)) break;
+					std::size_t tier_cost = modified_root.getCost(); // always call this after levelUp
 
-			if (tier_cost > tiers) break;
-			if (add_instead_of_insert) add(modified_root.getCost(), modified_root);
-			else insert(modified_root.getCost(), modified_root);
-		}
+					if (tier_cost > tiers) break;
+					if (add_instead_of_insert) add(modified_root.getCost(), modified_root);
+					else insert(modified_root.getCost(), modified_root);
+				}
+			}
+			else empty_mutex.unlock();
+		}		
 	}
 }
+
 template<class T>
 void tiercontainer<T>::order(const std::size_t & tiers, std::size_t const& skillnumber, std::vector<std::tuple<std::size_t, std::size_t > > const& min_max_level, std::size_t const& thread_number)
 {
@@ -170,7 +178,6 @@ void tiercontainer<T>::swap(std::size_t const& _tiers) {
 template<class T>
 T tiercontainer<T>::extract_front(const std::size_t & _tier) {
 	T _temp = tierlist[_tier].front();
-	std::unique_lock<std::mutex> pop_mutex(tier_mutex[_tier]);
 	tierlist[_tier].pop_front();
 	return _temp;
 }
