@@ -13,7 +13,7 @@ public:
 	void order(std::size_t const& tiers, std::size_t const& skillnumber);
 	void order(const std::size_t& tiers, std::size_t const& skillnumber, std::vector<std::tuple<std::size_t, std::size_t > > const& min_max_level, std::size_t const& thread_number=1);
 	void eatCycle(const std::size_t& tiers, std::size_t const& skillnumber, std::vector<std::tuple<std::size_t, std::size_t > > const& min_max_level,
-		std::size_t const& skill_it, bool const& add_instead_of_insert, std::size_t const& start = 0, std::size_t const& step = 1);
+		std::size_t const& skill_it, bool const& add_instead_of_insert, bool const& available_type);
 
 	tiercontainer(std::size_t const& _tiers);
 	tiercontainer(std::size_t const& _tiers, T const& root);
@@ -30,6 +30,8 @@ public:
 	std::list<T>* _temptierlist;
 private:
 	std::vector<std::mutex> tier_mutex;
+	std::vector<std::mutex> available_mutex_vector;
+	std::vector<bool> available_vector;
 	std::size_t tiers;
 	T root;
 };
@@ -92,27 +94,34 @@ void tiercontainer<T>::order(const std::size_t& tiers, std::size_t const& skilln
 
 template<class T>
 void tiercontainer<T>::eatCycle(const std::size_t& tiers, std::size_t const& skillnumber, std::vector<std::tuple<std::size_t, std::size_t > > const& min_max_level, 
-	std::size_t const& skill_it, bool const& add_instead_of_insert, std::size_t const& start, std::size_t const& step) {
-	for (size_t cycle = start; cycle < tiers; cycle+=step) while (!empty(cycle)) {
-		T cycle_root = extract_front(cycle);
-		T modified_root = cycle_root;
-		if (std::get<0>(min_max_level[skill_it]) <= 0)
-		{
-			modified_root.levelUp(skill_it, 0);
+	std::size_t const& skill_it, bool const& add_instead_of_insert, bool const& available_type) {
+	for (std::size_t cycle = 0; cycle < tiers; ++cycle) {
+		std::unique_lock available_lock(available_mutex_vector[cycle]);
+		if (available_vector[cycle] == available_type) {
+			available_vector[cycle] =!available_vector[cycle];
+			available_lock.unlock();
+			while (!empty(cycle)) {
+				T cycle_root = extract_front(cycle);
+				T modified_root = cycle_root;
+				if (std::get<0>(min_max_level[skill_it]) <= 0)
+				{
+					modified_root.levelUp(skill_it, 0);
 
-			if (add_instead_of_insert) add(modified_root.getCost(), modified_root);
-			else insert(modified_root.getCost(), modified_root);
-		}
-		if (cycle_root.unlocked(skill_it)) for (std::size_t skill_level_it = std::get<0>(min_max_level[skill_it]); skill_level_it <= std::get<1>(min_max_level[skill_it]); ++skill_level_it) {
+					if (add_instead_of_insert) add(modified_root.getCost(), modified_root);
+					else insert(modified_root.getCost(), modified_root);
+				}
+				if (cycle_root.unlocked(skill_it)) for (std::size_t skill_level_it = std::get<0>(min_max_level[skill_it]); skill_level_it <= std::get<1>(min_max_level[skill_it]); ++skill_level_it) {
 
-			modified_root = cycle_root;
+					modified_root = cycle_root;
 
-			if (!modified_root.levelUp(skill_it, skill_level_it)) break;
-			std::size_t tier_cost = modified_root.getCost(); // always call this after levelUp
+					if (!modified_root.levelUp(skill_it, skill_level_it)) break;
+					std::size_t tier_cost = modified_root.getCost(); // always call this after levelUp
 
-			if (tier_cost > tiers) break;
-			if (add_instead_of_insert) add(modified_root.getCost(), modified_root);
-			else insert(modified_root.getCost(), modified_root);
+					if (tier_cost > tiers) break;
+					if (add_instead_of_insert) add(modified_root.getCost(), modified_root);
+					else insert(modified_root.getCost(), modified_root);
+				}
+			}
 		}
 	}
 }
@@ -121,9 +130,19 @@ void tiercontainer<T>::order(const std::size_t & tiers, std::size_t const& skill
 {
 	if (tierlist) delete[] tierlist;
 	if (_temptierlist) delete[] _temptierlist;
+
 	tier_mutex.clear();
 	std::vector<std::mutex> temp_tier_mutex(tiers + 1);
 	tier_mutex.swap(temp_tier_mutex);
+
+	available_mutex_vector.clear();
+	std::vector<std::mutex> _tempavailable_mutex_vector(tiers + 1);
+	available_mutex_vector.swap(_tempavailable_mutex_vector);
+
+	bool available_type = true;
+
+	available_vector.resize(tiers + 1, available_type);
+
 	tierlist = new std::list<T>[tiers + 1];
 	_temptierlist = new std::list<T>[tiers + 1];
 	tierlist[0].push_front(root);
@@ -131,31 +150,29 @@ void tiercontainer<T>::order(const std::size_t & tiers, std::size_t const& skill
 	for (std::size_t skill_it = 0; skill_it < skillnumber - 1; ++skill_it) { // do it for skillnumber-1 and in the last iteration use value_lessequal since unlocking doesnt matter
 		std::cout << "Skill number " << skill_it << "\n";
 		std::vector<std::thread> thread_vector;
-		for (std::size_t thread_it = 1; thread_it < thread_number; ++thread_it) {
-			thread_vector.push_back(std::thread(&tiercontainer<T>::eatCycle, this, tiers, skillnumber, min_max_level, skill_it, false, thread_it, thread_number));
-		}
-		eatCycle(tiers, skillnumber, min_max_level, skill_it, false, 0, thread_number);
+		for (std::size_t thread_it = 0; thread_it < thread_number; ++thread_it) 
+			thread_vector.push_back(std::thread(&tiercontainer<T>::eatCycle, this, tiers, skillnumber, min_max_level, skill_it, false, available_type));
 		for (auto& thread_it : thread_vector)
 			if (thread_it.joinable()) thread_it.join();
 		swap(tiers);
+		available_type=!available_type;
 	}
 	{
 		std::size_t last_skill = skillnumber - 1;
 		std::cout << "Skill number " << last_skill << "\n";
 		std::vector<std::thread> thread_vector;
-		for (std::size_t thread_it = 1; thread_it < thread_number; ++thread_it) {
-			thread_vector.push_back(std::thread(&tiercontainer<T>::eatCycle, this, tiers, skillnumber, min_max_level, last_skill, true, thread_it, thread_number));
-		}
-		eatCycle(tiers, skillnumber, min_max_level, last_skill, true, 0, thread_number);
+		for (std::size_t thread_it = 0; thread_it < thread_number; ++thread_it) 
+			thread_vector.push_back(std::thread(&tiercontainer<T>::eatCycle, this, tiers, skillnumber, min_max_level, last_skill, true, available_type));
 		for (auto& thread_it : thread_vector)
 			if (thread_it.joinable()) thread_it.join();
 		swap(tiers);
+		available_type=!available_type;
 	}
 }
 
 template<class T>
 void tiercontainer<T>::add(const std::size_t & _tier, const T & pushedobj) {
-	std::unique_lock<std::mutex> add_mutex(tier_mutex[_tier]);
+	std::scoped_lock add_mutex(tier_mutex[_tier]);
 	_temptierlist[_tier].push_back(pushedobj);
 }
 
@@ -169,15 +186,16 @@ void tiercontainer<T>::swap(std::size_t const& _tiers) {
 
 template<class T>
 T tiercontainer<T>::extract_front(const std::size_t & _tier) {
+	std::unique_lock pop_mutex(tier_mutex[_tier]);
 	T _temp = tierlist[_tier].front();
-	std::unique_lock<std::mutex> pop_mutex(tier_mutex[_tier]);
 	tierlist[_tier].pop_front();
+	pop_mutex.unlock();
 	return _temp;
 }
 
 template<class T>
 bool tiercontainer<T>::insert(const std::size_t & _tier, const T & candidate) {
-	std::unique_lock<std::mutex> insert_mutex(tier_mutex[_tier]);
+	std::scoped_lock insert_mutex(tier_mutex[_tier]);
 	for (typename std::list<T>::iterator it = _temptierlist[_tier].begin(); it != _temptierlist[_tier].end(); ) {
 		if ((*it) <= candidate) {
 			_temptierlist[_tier].erase(it++);
