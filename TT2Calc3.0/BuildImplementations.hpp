@@ -208,6 +208,7 @@ class AnchoringShot{
 public:
 	virtual vtype getDamage(std::size_t const& build, vtype const& value1, vtype const& value2, size_t const& gold) {
 		if (DebugMode) std::cout << "AnchoringShot::getDamage"<<build<<","<<value1<<","<<value2<<","<<gold<<"\n";
+		if (build == tt2::HS) return pow(value1, tt2::dmg_expos[build][tt2::ALLDAMAGE]);
 		vtype spawns = tt2::clanshot_cooldown / tt2::spawn_time;
 		return pow((value1 - 1.) / spawns + 1.,tt2::dmg_expos[build][tt2::ALLDAMAGE]);
 	}

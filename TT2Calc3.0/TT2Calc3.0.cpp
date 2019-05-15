@@ -79,7 +79,7 @@ int main()
 
 	Build first_child(starting_container);
 
-	std::size_t max_skillpoints = 5000;
+	std::size_t max_skillpoints = 2000;
 
 	tiercontainer <Build> tier_orderer(max_skillpoints, first_child);
 	std::size_t thread_number = std::thread::hardware_concurrency() / 2 > 0 ? std::thread::hardware_concurrency() / 2:1;
