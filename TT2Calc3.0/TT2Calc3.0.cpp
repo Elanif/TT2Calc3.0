@@ -7,6 +7,8 @@
 #include"Optimizer.hpp"
 #include "TT2Calc3.0.h"
 #include<thread>
+#include<sstream>
+#include<algorithm>
 
 int main()
 {
@@ -79,17 +81,44 @@ int main()
 
 	Build first_child(starting_container);
 
-	std::size_t max_skillpoints = 2000;
+	std::cout << "Enter the max number of skillpoints, -1 for single skill leveling";
+	long long int mode = 0;
+	std::cin >> mode;
+	if (mode < 0) {
+		std::stringstream temp_stream("16 1 1 15 18 2 0 12 0   2 1 7 1 15 1 2 0 13   2 5 24 1 0 2 1 0 8 7    12 0 0 1 0 0 1");
+		for (std::size_t i = 0; i < min_max_level.size(); ++i)
+			temp_stream >> first_child.d[i].level;
+		std::vector<std::pair<double, std::string> > best_levelups;
+		for (std::size_t i = 0; i < min_max_level.size(); ++i) {
+			const Skill& skill = first_child.d[i].skill.get();
+			if (std::get<1>(min_max_level[i]) <= first_child.d[i].level) best_levelups.push_back(std::make_pair(0, skill.Name));
+			else {
+				double cost = skill.cost[first_child.d[i].level + 1];
+				double damage = first_child.d[i].getCurrentEffect();
+				first_child.d[i].level++;
+				damage = (first_child.d[i].getCurrentEffect() / damage);
+				if (damage == 0) damage = 1;
+				double efficiency = pow(damage , 1. / cost);
+				best_levelups.push_back(std::make_pair(efficiency, skill.Name));
+			}
+		}
+		sort(best_levelups.begin(), best_levelups.end());
+		for (const auto& i:best_levelups)	std::cout << i.first << "," << i.second << "\n";
 
-	tiercontainer <Build> tier_orderer(max_skillpoints, first_child);
-	std::size_t thread_number = std::thread::hardware_concurrency() / 2 > 0 ? std::thread::hardware_concurrency() / 2:1;
-	tier_orderer.order(max_skillpoints, tt2::skills.size(),min_max_level, thread_number);
+	}
+	else {
+		std::size_t max_skillpoints = mode;
 
-	if (output_name.length() == 0) return 1;
-	std::fstream output_text(output_name, std::ios::out);
+		tiercontainer <Build> tier_orderer(max_skillpoints, first_child);
+		std::size_t thread_number = std::thread::hardware_concurrency() / 2 > 0 ? std::thread::hardware_concurrency() / 2 : 1;
+		tier_orderer.order(max_skillpoints, tt2::skills.size(), min_max_level, thread_number);
 
-	std::vector<Build> ordering=tier_orderer.print(Build::value_lessequal);
-	for (const auto& i : ordering)
-		i.print(output_text);
-	output_text.close();
+		if (output_name.length() == 0) return 1;
+		std::fstream output_text(output_name, std::ios::out);
+
+		std::vector<Build> ordering = tier_orderer.print(Build::value_lessequal);
+		for (const auto& i : ordering)
+			i.print(output_text);
+		output_text.close();
+	}
 }
