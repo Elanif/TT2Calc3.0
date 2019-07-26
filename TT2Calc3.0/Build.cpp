@@ -1,5 +1,6 @@
 #include "Build.hpp"
 #include<iostream>
+#include<iomanip>
 
 vtype Build::getValue() const
 {
@@ -46,9 +47,9 @@ ctype Build::gettingTo(std::size_t const& skill_index) const //limit amount
 
 void Build::print(std::ostream& out_stream) const
 {
-	out_stream << "SP:" << getCost()<<" DMG:"<< getValue();
+	out_stream << "SP:" << std::setw(5)<<getCost()<<" DMG:"<<std::setprecision(4)<<std::setw(10)<< getValue();
 	for (const auto& i : d) {
-		out_stream <<" "<< i.level;
+		out_stream <<" "<< std::setw(2)<< i.level;
 	}
 	out_stream << "\n";
 }

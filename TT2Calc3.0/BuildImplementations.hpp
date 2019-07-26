@@ -45,6 +45,7 @@ class TapDMG : Expo {
 public:
 	using Expo::Expo;
 	virtual vtype getDamage(std::size_t const& build, vtype const& value1, vtype const& value2, size_t const& gold) {
+		if (DebugMode) std::cout << "TapDMG::getDamage" << build << "," << value1 << "," << value2 << "," << gold <<", result=" << pow(value1, expo * tt2::dmg_expos[build][tt2::TAPDAMAGE])<<"\n";
 		return pow(value1, expo * tt2::dmg_expos[build][tt2::TAPDAMAGE]);
 	}
 };
@@ -159,7 +160,7 @@ public:
 		if (DebugMode) std::cout << "ChestersonGoldAndChance::getDamage"<<build<<","<<value1<<","<<value2<<","<<gold<<"\n";
 
 		if (tt2::chesterson_chance + value2 <= 0) return 1;
-		return pow(value1, (tt2::chesterson_chance + value2) / tt2::chesterson_chance* tt2::gold_expos[gold][tt2::CHESTERSONGOLD]);
+		return pow(value1* (tt2::chesterson_chance + value2) / tt2::chesterson_chance, tt2::gold_expos[gold][tt2::CHESTERSONGOLD]);
 	}
 };
 
@@ -208,6 +209,7 @@ class AnchoringShot{
 public:
 	virtual vtype getDamage(std::size_t const& build, vtype const& value1, vtype const& value2, size_t const& gold) {
 		if (DebugMode) std::cout << "AnchoringShot::getDamage"<<build<<","<<value1<<","<<value2<<","<<gold<<"\n";
+		if (tt2::fight_duration < tt2::clanshot_cooldown) return 1;
 		vtype spawns = tt2::clanshot_cooldown / tt2::spawn_time;
 		return pow((value1 - 1.) / spawns + 1.,tt2::dmg_expos[build][tt2::ALLDAMAGE]);
 	}

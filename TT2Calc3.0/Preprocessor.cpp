@@ -41,29 +41,29 @@ std::vector<std::tuple<std::size_t, std::size_t > > Preprocessor::init(tt2::BUIL
 	std::vector<std::tuple<std::size_t, std::size_t > >min_max_level(35, std::make_tuple(0, 26));
 	switch (build) {
 	case tt2::SC:
-		tt2::fight_duration = 4;
+		tt2::fight_duration = 4.1;
 		min_max_level[16]={ 0,0 };
-		min_max_level[24]={ 13,25 };
+		min_max_level[24]={ 9,25 };
 		min_max_level[27]={ 1,25 };
 		min_max_level[31] = { 1,25 };
 		min_max_level[34] = { 1,25 };
 		break;
 	case tt2::HS:
-		tt2::fight_duration = 34. / 12. * 4.;
+		tt2::fight_duration = 58./(2.)*12.; //34. / (12. * .3 + 1. * .7) * 4.;
 		min_max_level[16] = { 0,0 };
-		min_max_level[20] = { 24,25 };
+		min_max_level[20] = { 25,25 };
 		min_max_level[31] = { 1,25 };
 		min_max_level[34] = { 1,25 };
 		min_max_level[27] = { 1,25 };
 		break;
 	case tt2::Pet:
-		min_max_level[6] = { 0,1 };
-		min_max_level[32] = { 1,25 };
 		min_max_level[29] = { 1,25 };
-		tt2::fight_duration = 4;
+		min_max_level[32] = { 1,25 };
+		min_max_level[34] = { 1,25 };
+		tt2::fight_duration = 12.1;
 		break;
 	case tt2::CS:
-		tt2::fight_duration = 4;
+		tt2::fight_duration = 4.1;
 		break;
 	}
 

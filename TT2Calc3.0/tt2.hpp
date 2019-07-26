@@ -68,6 +68,7 @@ public:
 	static vtype crit_chance;
 	static vtype chesterson_chance;
 	static vtype tapdmgfromheroes;
+	static vtype sc_attempts;
 	static vtype ls_per_second;
 	static vtype constexpr max_crit_damage_ratio = 6.7;
 

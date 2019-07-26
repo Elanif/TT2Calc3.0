@@ -18,10 +18,11 @@ vtype tt2::heroic_might_inspired_heroes = 6; //debatable
 vtype tt2::clanshot_cooldown = 4;
 vtype tt2::spawn_time = 0.6 * (1 - 0.1054 + 0.35);
 vtype tt2::fight_duration = 4;
-vtype tt2::crit_chance = 0.3;
+vtype tt2::crit_chance = 0.27;
 vtype tt2::chesterson_chance = 0.3;
 vtype tt2::tapdmgfromheroes = 0.4;
-vtype tt2::ls_per_second = 2.2 / 100 * 84 * 1.5;
+vtype tt2::sc_attempts = 169.9;
+vtype tt2::ls_per_second = 2.2 / 100 * sc_attempts;
 vtype tt2::dmg_expos[tt2::builds_size][tt2::dmgtypes_size] = { 0 };
 vtype tt2::gold_expos[tt2::goldtypes_size][tt2::goldtypes_size] = { 0 };
 std::size_t tt2::insight_count_gold[tt2::goldtypes_size] = { 0 };
@@ -220,6 +221,9 @@ bool tt2::buildSkill(std::string const& TalentID, std::stringstream& line_stream
 	}
 
 	skill.setName(s_Name);
+	if (DebugMode) {
+		std::cout << s_Name << "\n";
+	}
 
 	skill.setNote(s_Note);
 

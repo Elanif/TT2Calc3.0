@@ -30,7 +30,7 @@ int main()
 	SkillPowers.push_back(Zero()+pHoMGold(1)+PHoMCooldown());
 	SkillPowers.push_back(Zero()+MaxCritDamageAndCritChance());
 	SkillPowers.push_back(Zero()+FireSwordDamage(1));
-	SkillPowers.push_back(Zero());
+	SkillPowers.push_back(Zero()+PetDMG(1));
 	SkillPowers.push_back(Zero()+TapDMG(1));
 	SkillPowers.push_back(Zero()+PetDMG(1));
 
@@ -63,8 +63,8 @@ int main()
 	SkillPowers.push_back(Zero()+GhostShip());
 	SkillPowers.push_back(Zero()+ShadowAssassin());
 
-	constexpr tt2::BUILDS build = tt2::HS;
-	constexpr tt2::GOLDTYPES gold=tt2::PHOMGOLD;
+	constexpr tt2::BUILDS build = tt2::Pet;
+	constexpr tt2::GOLDTYPES gold=tt2::FAIRYGOLD;
 
 	std::string output_name = Preprocessor::getStringBuildAndInit(build, gold);
 
@@ -85,21 +85,26 @@ int main()
 	long long int mode = 0;
 	std::cin >> mode;
 	if (mode < 0) {
-		std::stringstream temp_stream("16 1 1 15 18 2 0 12 0   2 1 7 1 15 1 2 0 13   2 5 24 1 0 2 1 0 8 7    12 0 0 1 0 0 1");
+		std::stringstream temp_stream("15 1 15 1 14 16 16 12 12		2 14 1 1 14 1 1 0 13		2 13 1 1 0 1 1 0 9 8		11 12 0 1 6 0 1");
 		for (std::size_t i = 0; i < min_max_level.size(); ++i)
 			temp_stream >> first_child.d[i].level;
-		std::vector<std::pair<double, std::string> > best_levelups;
+		std::vector<std::pair<vtype, std::string> > best_levelups;
 		for (std::size_t i = 0; i < min_max_level.size(); ++i) {
 			const Skill& skill = first_child.d[i].skill.get();
 			if (std::get<1>(min_max_level[i]) <= first_child.d[i].level) best_levelups.push_back(std::make_pair(0, skill.Name));
 			else {
-				double cost = skill.cost[first_child.d[i].level + 1];
-				double damage = first_child.d[i].getCurrentEffect();
-				first_child.d[i].level++;
-				damage = (first_child.d[i].getCurrentEffect() / damage);
-				if (damage == 0) damage = 1;
-				double efficiency = pow(damage , 1. / cost);
-				best_levelups.push_back(std::make_pair(efficiency, skill.Name));
+				if (first_child.d[i].level < skill.cost.size()) { //not max level
+					auto cost = skill.cost[first_child.d[i].level];
+					auto damage = first_child.d[i].getCurrentEffect();
+					first_child.d[i].level++;
+					damage = (first_child.d[i].getCurrentEffect() / damage);
+					if (damage == 0) damage = 1;
+					auto efficiency = pow(damage, 1. / cost);
+					best_levelups.push_back(std::make_pair(efficiency, skill.Name));
+				}
+				else { //skill is already max level
+					best_levelups.push_back(std::make_pair(1., skill.Name));
+				}
 			}
 		}
 		sort(best_levelups.begin(), best_levelups.end());
